@@ -6,10 +6,10 @@ import { TIMELINE } from "@/lib/constants";
 
 export function About() {
   return (
-    <section id="about" className="py-24 md:py-32 bg-[#0F1219]">
+    <section id="about" className="py-24 md:py-32 bg-[#f5f5f0]">
       <div className="max-w-4xl mx-auto px-6">
         <SectionHeading
-          label="The Story"
+          label="About Me"
           title="The Journey"
           subtitle="From crafting web apps to deploying smart contracts to building AI agents — an evolution across the stack."
         />

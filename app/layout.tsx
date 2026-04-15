@@ -1,26 +1,19 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Work_Sans } from "next/font/google";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-jakarta",
   display: "swap",
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
-const dmSans = DM_Sans({
+const workSans = Work_Sans({
   subsets: ["latin"],
-  variable: "--font-dm",
+  variable: "--font-work",
   display: "swap",
-  weight: ["400", "500", "600"],
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
-  display: "swap",
-  weight: ["400", "500", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -53,7 +46,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${jakarta.variable} ${dmSans.variable} ${jetbrainsMono.variable} antialiased bg-[#0B0E14]`}>
+      <body className={`${jakarta.variable} ${workSans.variable} antialiased bg-[#f5f5f0]`}>
         {children}
       </body>
     </html>

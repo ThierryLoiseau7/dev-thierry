@@ -8,12 +8,10 @@ import { Skills } from "@/components/sections/Skills";
 import { Projects } from "@/components/sections/Projects";
 import { AIAgent } from "@/components/sections/AIAgent";
 import { Contact } from "@/components/sections/Contact";
-import { CustomCursor } from "@/components/ui/CustomCursor";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-[#0B0E14] overflow-x-hidden">
-      <CustomCursor />
+    <main className="min-h-screen bg-[#f5f5f0] overflow-x-hidden">
       <Navbar />
       <Hero />
       <WhatIBuild />

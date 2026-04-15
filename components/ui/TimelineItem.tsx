@@ -4,9 +4,9 @@ import { motion } from "framer-motion";
 import type { TimelineEntry } from "@/lib/types";
 
 const phaseColors: Record<TimelineEntry["phase"], string> = {
-  webdev: "#39FF14",
-  web3: "#FF007F",
-  ai: "#00D1FF",
+  webdev: "#16a34a",
+  web3: "#7c3aed",
+  ai: "#0284c7",
 };
 
 const phaseLabel: Record<TimelineEntry["phase"], string> = {
@@ -26,7 +26,7 @@ export function TimelineItem({ entry, index, isLast }: TimelineItemProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -30 }}
+      initial={{ opacity: 0, x: -24 }}
       whileInView={{ opacity: 1, x: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.55, delay: index * 0.15 }}
@@ -35,16 +35,15 @@ export function TimelineItem({ entry, index, isLast }: TimelineItemProps) {
       {/* Vertical line */}
       {!isLast && (
         <div
-          className="absolute left-5 top-12 w-px h-full"
-          style={{ background: `linear-gradient(to bottom, ${color}40, transparent)` }}
+          className="absolute left-5 top-12 w-px h-full bg-[rgba(0,0,0,0.08)]"
         />
       )}
 
       {/* Dot */}
       <div className="relative shrink-0 mt-1">
         <div
-          className="w-10 h-10 rounded-full border-2 flex items-center justify-center"
-          style={{ borderColor: color, boxShadow: `0 0 20px ${color}40` }}
+          className="w-10 h-10 rounded-full border-2 flex items-center justify-center bg-white"
+          style={{ borderColor: color }}
         >
           <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
         </div>
@@ -53,24 +52,24 @@ export function TimelineItem({ entry, index, isLast }: TimelineItemProps) {
       {/* Content */}
       <div className="flex-1 pt-1">
         <div className="flex flex-wrap items-center gap-3 mb-2">
-          <span className="font-mono text-xs tracking-widest uppercase text-[#4a5568]">
+          <span className="text-xs tracking-widest uppercase text-[#aaaaaa] font-medium">
             {entry.year}
           </span>
           <span
-            className="font-mono text-[10px] tracking-wider uppercase rounded-full px-2.5 py-0.5 border"
+            className="text-[10px] tracking-wider uppercase rounded-full px-2.5 py-0.5 border font-medium"
             style={{
               color,
-              borderColor: `${color}35`,
-              backgroundColor: `${color}0d`,
+              borderColor: `${color}30`,
+              backgroundColor: `${color}0a`,
             }}
           >
             {phaseLabel[entry.phase]}
           </span>
         </div>
-        <h3 className="text-xl font-mono font-semibold text-[#FFFFFF] mb-3">
+        <h3 className="text-xl font-bold text-[#1a1a1a] mb-3">
           {entry.title}
         </h3>
-        <p className="text-[#8892a4] text-sm leading-relaxed">
+        <p className="text-[#666666] text-sm leading-relaxed font-work">
           {entry.description}
         </p>
       </div>
