@@ -28,3 +28,15 @@ export interface TimelineEntry {
   description: string;
   phase: "webdev" | "web3" | "ai";
 }
+
+export interface GalleryItem {
+  id: string;
+  title: string;
+  category: "design" | "video";
+  src: string;
+  type: "image" | "video";
+  thumbnail?: string;
+  tags?: string[];
+  client?: string;
+  year?: string;
+}

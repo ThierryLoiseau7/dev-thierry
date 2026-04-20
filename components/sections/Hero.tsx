@@ -3,6 +3,43 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 
+/* ─── Letter-by-Letter Animator ─── */
+function AdLetters({
+  text,
+  delay = 0,
+  className = "",
+  style = {},
+}: {
+  text: string;
+  delay?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const container = {
+    hidden: {},
+    show: { transition: { staggerChildren: 0.032, delayChildren: delay } },
+  };
+  const letter = {
+    hidden: { opacity: 0, y: 18 },
+    show: { opacity: 1, y: 0, transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] } },
+  };
+  return (
+    <motion.span
+      variants={container}
+      initial="hidden"
+      animate="show"
+      className={className}
+      style={{ display: "inline-flex", flexWrap: "wrap", ...style }}
+    >
+      {text.split("").map((char, i) => (
+        <motion.span key={i} variants={letter} style={{ display: "inline-block", whiteSpace: char === " " ? "pre" : "normal" }}>
+          {char === " " ? "\u00A0" : char}
+        </motion.span>
+      ))}
+    </motion.span>
+  );
+}
+
 /* ─── Spinning Circular Text ─── */
 function SpinningCircleText() {
   const text = "DEV THIERRY • FULL STACK DEV • AI AGENT • WEB3 • ";
@@ -23,12 +60,97 @@ function SpinningCircleText() {
   );
 }
 
+/* ─── Styled Photo ─── */
+function StyledPhoto() {
+  return (
+    <div className="relative shrink-0" style={{ width: "clamp(260px, 38vw, 480px)" }}>
+
+      {/* Frame layer 1 — rotated back-left */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        transform: "rotate(-4deg) translate(-10px, 10px)",
+        border: "2px solid rgba(26,26,26,0.18)",
+        borderRadius: "6px",
+        zIndex: 0,
+      }} />
+
+      {/* Frame layer 2 — rotated back-right */}
+      <div style={{
+        position: "absolute",
+        inset: 0,
+        transform: "rotate(2.5deg) translate(8px, 6px)",
+        border: "2px solid rgba(26,26,26,0.10)",
+        borderRadius: "6px",
+        zIndex: 0,
+      }} />
+
+      {/* Photo — front, hard border */}
+      <div style={{
+        position: "relative",
+        zIndex: 1,
+        border: "2px solid #1a1a1a",
+        borderRadius: "6px",
+        overflow: "hidden",
+        width: "100%",
+        height: "clamp(300px, 44vw, 560px)",
+        boxShadow: "8px 8px 0px #1a1a1a",
+      }}>
+        <Image
+          src="/thierry3.jpg"
+          alt="Dev Thierry"
+          fill
+          className="object-cover object-center"
+          priority
+        />
+        {/* Subtle gradient overlay bottom */}
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "linear-gradient(to top, rgba(26,26,26,0.18) 0%, transparent 40%)",
+            pointerEvents: "none",
+          }}
+        />
+      </div>
+
+      {/* Corner accent — top-left */}
+      <div style={{
+        position: "absolute",
+        top: -8,
+        left: -8,
+        width: 28,
+        height: 28,
+        borderTop: "3px solid #1a1a1a",
+        borderLeft: "3px solid #1a1a1a",
+        zIndex: 2,
+      }} />
+
+      {/* Corner accent — bottom-right */}
+      <div style={{
+        position: "absolute",
+        bottom: -16,
+        right: -16,
+        width: 28,
+        height: 28,
+        borderBottom: "3px solid #1a1a1a",
+        borderRight: "3px solid #1a1a1a",
+        zIndex: 2,
+      }} />
+
+    </div>
+  );
+}
+
+
+
 /* ─── Hero ─── */
 export function Hero() {
   return (
     <section
       id="home"
-      className="relative min-h-screen bg-[#f5f5f0] flex flex-col items-center overflow-hidden"
+      className="relative min-h-screen bg-[#f5f5f0] flex flex-col items-center"
     >
       {/* Content wrapper */}
       <div className="w-full max-w-5xl mx-auto px-6 flex flex-col items-center pt-36 pb-0">
@@ -70,23 +192,7 @@ export function Hero() {
           transition={{ duration: 0.9, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
           className="mt-14 flex items-end gap-0 relative"
         >
-          {/* Large portrait photo */}
-          <div
-            className="relative overflow-hidden shrink-0"
-            style={{
-              width: "clamp(280px, 42vw, 540px)",
-              height: "clamp(320px, 48vw, 600px)",
-              borderRadius: "24px",
-            }}
-          >
-            <Image
-              src="/thierry3.jpg"
-              alt="Dev Thierry"
-              fill
-              className="object-cover object-center"
-              priority
-            />
-          </div>
+          <StyledPhoto />
 
           {/* Spinning text — anchored bottom-right of photo */}
           <div className="absolute -right-16 md:-right-20 bottom-8">
@@ -94,23 +200,91 @@ export function Hero() {
           </div>
         </motion.div>
 
-        {/* ── Location badge ── */}
+        {/* ── Ad Banner lettre par lettre ── */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.7 }}
-          className="mt-5 mb-8 flex items-center gap-2 text-[#888888]"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="mt-6 w-full flex flex-col gap-3"
         >
-          <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6}
-              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.6}
-              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <span className="text-sm font-medium">Remote — Available Worldwide</span>
+          <AdLetters
+            text="AI can build it"
+            delay={0.9}
+            className="text-[11px] font-black tracking-[0.35em] uppercase select-none"
+            style={{ color: "#888888" }}
+          />
+          <div>
+            <AdLetters
+              text="Only you can"
+              delay={1.2}
+              className="font-heading font-black leading-none tracking-tight select-none"
+              style={{ fontSize: "clamp(2rem, 5.5vw, 4rem)", color: "#1a1a1a" }}
+            />
+            <div className="flex items-baseline flex-wrap gap-x-[0.2em]">
+              <AdLetters
+                text="make it"
+                delay={1.6}
+                className="font-heading font-black leading-none tracking-tight select-none"
+                style={{ fontSize: "clamp(2rem, 5.5vw, 4rem)", color: "#1a1a1a" }}
+              />
+              <AdLetters
+                text="matter."
+                delay={1.85}
+                className="font-heading font-black leading-none tracking-tight select-none"
+                style={{ fontSize: "clamp(2rem, 5.5vw, 4rem)", color: "#888888" }}
+              />
+            </div>
+          </div>
         </motion.div>
 
       </div>
+
+      {/* ── Marquee pub ── */}
+      <div
+        className="w-full select-none mt-8 overflow-hidden"
+        style={{ background: "#1a1a1a" }}
+      >
+        <div
+          className="flex animate-marquee-fast whitespace-nowrap items-center"
+          style={{ paddingTop: "18px", paddingBottom: "18px" }}
+        >
+          {[0, 1].map((r) => (
+            <span key={r} className="inline-flex items-center shrink-0">
+              {[
+                { t: "CREATIVITY",  dim: false },
+                { t: "✦",           dim: true  },
+                { t: "MARKETING",   dim: false },
+                { t: "✦",           dim: true  },
+                { t: "VISION",      dim: false },
+                { t: "✦",           dim: true  },
+                { t: "I AM HERE TO SHOW YOU WHAT YOU CANNOT THINK", dim: false },
+                { t: "✦",           dim: true  },
+                { t: "THE FUTURE",  dim: false },
+                { t: "✦",           dim: true  },
+              ].map(({ t, dim }, i) => (
+                <span
+                  key={i}
+                  className="inline-block"
+                  style={{
+                    fontSize: t === "✦" ? "10px" : t.length > 20 ? "clamp(0.85rem, 1.8vw, 1.1rem)" : "clamp(1rem, 2vw, 1.35rem)",
+                    fontWeight: 800,
+                    fontFamily: "var(--font-jakarta), sans-serif",
+                    letterSpacing: t === "✦" ? "0" : "0.18em",
+                    color: t === "✦" ? "rgba(245,245,240,0.22)" : dim ? "rgba(245,245,240,0.38)" : "#f5f5f0",
+                    paddingLeft: t === "✦" ? "22px" : "28px",
+                    paddingRight: t === "✦" ? "22px" : "0",
+                    textTransform: "uppercase",
+                    lineHeight: 1,
+                  }}
+                >
+                  {t}
+                </span>
+              ))}
+            </span>
+          ))}
+        </div>
+      </div>
+
     </section>
   );
 }

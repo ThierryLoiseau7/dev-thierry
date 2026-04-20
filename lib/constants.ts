@@ -1,4 +1,4 @@
-import type { Project, Skill, TimelineEntry } from "./types";
+import type { Project, Skill, TimelineEntry, GalleryItem } from "./types";
 
 export const TIMELINE: TimelineEntry[] = [
   {
@@ -114,6 +114,36 @@ export const PROJECTS: Project[] = [
     category: "ai-agent",
     tags: ["Claude API", "Node.js", "TypeScript", "Next.js"],
     featured: false,
+  },
+];
+
+export const GALLERY_ITEMS: GalleryItem[] = [
+  {
+    id: "g01",
+    title: "AI Visual Direction",
+    category: "design",
+    src: "/ai.jpg",
+    type: "image",
+    tags: ["AI", "Branding"],
+    year: "2025",
+  },
+  {
+    id: "g02",
+    title: "AI Composition #1",
+    category: "design",
+    src: "/ai1.jpg",
+    type: "image",
+    tags: ["AI", "Créatif"],
+    year: "2025",
+  },
+  {
+    id: "g03",
+    title: "AI Composition #2",
+    category: "design",
+    src: "/ai2.jpg",
+    type: "image",
+    tags: ["AI", "Visuel"],
+    year: "2025",
   },
 ];
 
