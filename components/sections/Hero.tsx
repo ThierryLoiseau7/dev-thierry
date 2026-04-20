@@ -2,6 +2,81 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useEffect, useRef, useState } from "react";
+
+/* ─── Scramble Text ─── */
+const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
+
+function ScrambleText({
+  text,
+  delay = 0,
+  className = "",
+  style = {},
+}: {
+  text: string;
+  delay?: number;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  const [display, setDisplay] = useState(() => text.split("").map(() => " "));
+  const resolvedRef = useRef(0);
+  const frameRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    let started = false;
+    const startTimeout = setTimeout(() => {
+      started = true;
+      let tick = 0;
+      const totalChars = text.length;
+      const ticksPerChar = 6;
+
+      const run = () => {
+        tick++;
+        const resolved = Math.floor(tick / ticksPerChar);
+        resolvedRef.current = resolved;
+
+        setDisplay(
+          text.split("").map((char, i) => {
+            if (char === " ") return " ";
+            if (i < resolved) return char;
+            return CHARS[Math.floor(Math.random() * CHARS.length)];
+          })
+        );
+
+        if (resolved < totalChars) {
+          frameRef.current = setTimeout(run, 40);
+        } else {
+          setDisplay(text.split(""));
+        }
+      };
+
+      run();
+    }, delay * 1000);
+
+    return () => {
+      clearTimeout(startTimeout);
+      if (frameRef.current) clearTimeout(frameRef.current);
+    };
+  }, [text, delay]);
+
+  return (
+    <span className={className} style={style}>
+      {display.map((char, i) => (
+        <span
+          key={i}
+          style={{
+            display: "inline-block",
+            whiteSpace: char === " " ? "pre" : "normal",
+            color: i < resolvedRef.current ? undefined : "rgba(26,26,26,0.35)",
+            transition: "color 0.1s",
+          }}
+        >
+          {char === " " ? "\u00A0" : char}
+        </span>
+      ))}
+    </span>
+  );
+}
 
 /* ─── Letter-by-Letter Animator ─── */
 function AdLetters({
@@ -63,38 +138,19 @@ function SpinningCircleText() {
 /* ─── Styled Photo ─── */
 function StyledPhoto() {
   return (
-    <div className="relative shrink-0" style={{ width: "clamp(260px, 38vw, 480px)" }}>
-
-      {/* Frame layer 1 — rotated back-left */}
-      <div style={{
-        position: "absolute",
-        inset: 0,
-        transform: "rotate(-4deg) translate(-10px, 10px)",
-        border: "2px solid rgba(26,26,26,0.18)",
-        borderRadius: "6px",
-        zIndex: 0,
-      }} />
-
-      {/* Frame layer 2 — rotated back-right */}
-      <div style={{
-        position: "absolute",
-        inset: 0,
-        transform: "rotate(2.5deg) translate(8px, 6px)",
-        border: "2px solid rgba(26,26,26,0.10)",
-        borderRadius: "6px",
-        zIndex: 0,
-      }} />
-
-      {/* Photo — front, hard border */}
+    <motion.div
+      className="relative shrink-0 cursor-pointer"
+      style={{ width: "clamp(260px, 38vw, 480px)" }}
+      whileHover={{ scale: 1.04, y: -6 }}
+      transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+    >
       <div style={{
         position: "relative",
-        zIndex: 1,
-        border: "2px solid #1a1a1a",
-        borderRadius: "6px",
-        overflow: "hidden",
         width: "100%",
         height: "clamp(300px, 44vw, 560px)",
-        boxShadow: "8px 8px 0px #1a1a1a",
+        border: "1px solid rgba(26,26,26,0.12)",
+        borderRadius: "40% 60% 55% 45% / 50% 45% 55% 50%",
+        overflow: "hidden",
       }}>
         <Image
           src="/thierry3.jpg"
@@ -103,43 +159,8 @@ function StyledPhoto() {
           className="object-cover object-center"
           priority
         />
-        {/* Subtle gradient overlay bottom */}
-        <div
-          aria-hidden
-          style={{
-            position: "absolute",
-            inset: 0,
-            background: "linear-gradient(to top, rgba(26,26,26,0.18) 0%, transparent 40%)",
-            pointerEvents: "none",
-          }}
-        />
       </div>
-
-      {/* Corner accent — top-left */}
-      <div style={{
-        position: "absolute",
-        top: -8,
-        left: -8,
-        width: 28,
-        height: 28,
-        borderTop: "3px solid #1a1a1a",
-        borderLeft: "3px solid #1a1a1a",
-        zIndex: 2,
-      }} />
-
-      {/* Corner accent — bottom-right */}
-      <div style={{
-        position: "absolute",
-        bottom: -16,
-        right: -16,
-        width: 28,
-        height: 28,
-        borderBottom: "3px solid #1a1a1a",
-        borderRight: "3px solid #1a1a1a",
-        zIndex: 2,
-      }} />
-
-    </div>
+    </motion.div>
   );
 }
 
@@ -194,10 +215,6 @@ export function Hero() {
         >
           <StyledPhoto />
 
-          {/* Spinning text — anchored bottom-right of photo */}
-          <div className="absolute -right-16 md:-right-20 bottom-8">
-            <SpinningCircleText />
-          </div>
         </motion.div>
 
         {/* ── Ad Banner lettre par lettre ── */}
@@ -239,49 +256,121 @@ export function Hero() {
 
       </div>
 
-      {/* ── Marquee pub ── */}
-      <div
-        className="w-full select-none mt-8 overflow-hidden"
-        style={{ background: "#1a1a1a" }}
-      >
-        <div
-          className="flex animate-marquee-fast whitespace-nowrap items-center"
-          style={{ paddingTop: "18px", paddingBottom: "18px" }}
-        >
-          {[0, 1].map((r) => (
-            <span key={r} className="inline-flex items-center shrink-0">
-              {[
-                { t: "CREATIVITY",  dim: false },
-                { t: "✦",           dim: true  },
-                { t: "MARKETING",   dim: false },
-                { t: "✦",           dim: true  },
-                { t: "VISION",      dim: false },
-                { t: "✦",           dim: true  },
-                { t: "I AM HERE TO SHOW YOU WHAT YOU CANNOT THINK", dim: false },
-                { t: "✦",           dim: true  },
-                { t: "THE FUTURE",  dim: false },
-                { t: "✦",           dim: true  },
-              ].map(({ t, dim }, i) => (
-                <span
-                  key={i}
-                  className="inline-block"
+      {/* ── Manifeste ── */}
+      <div className="w-full mt-6 select-none">
+        <div className="w-full max-w-5xl mx-auto px-6">
+
+          {[
+            {
+              num: "01",
+              main: "MARKETING & CREATIVITY",
+              sub: "ARE THE FUTURE.",
+              delay: 0.9,
+            },
+            {
+              num: "02",
+              main: "I'M HERE TO SHOW YOU",
+              sub: "WHAT YOU CANNOT THINK.",
+              delay: 1.3,
+            },
+          ].map(({ num, main, sub, delay }) => (
+            <motion.div
+              key={num}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay }}
+              className="group relative"
+              style={{ borderTop: "1px solid rgba(26,26,26,0.12)" }}
+            >
+              {/* Ligne qui s'étend au hover */}
+              <motion.div
+                style={{
+                  position: "absolute",
+                  top: -1,
+                  left: 0,
+                  height: "2px",
+                  background: "#1a1a1a",
+                  width: "0%",
+                }}
+                whileInView={{ width: "100%" }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, delay: delay + 0.1, ease: [0.22, 1, 0.36, 1] }}
+              />
+
+              <div
+                className="flex items-end justify-between gap-6 py-7 cursor-default"
+                style={{ paddingLeft: "0", paddingRight: "0" }}
+              >
+                {/* Numéro */}
+                <motion.span
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: delay + 0.2 }}
                   style={{
-                    fontSize: t === "✦" ? "10px" : t.length > 20 ? "clamp(0.85rem, 1.8vw, 1.1rem)" : "clamp(1rem, 2vw, 1.35rem)",
-                    fontWeight: 800,
+                    fontSize: "0.7rem",
+                    fontWeight: 700,
+                    letterSpacing: "0.25em",
+                    color: "#bbbbbb",
                     fontFamily: "var(--font-jakarta), sans-serif",
-                    letterSpacing: t === "✦" ? "0" : "0.18em",
-                    color: t === "✦" ? "rgba(245,245,240,0.22)" : dim ? "rgba(245,245,240,0.38)" : "#f5f5f0",
-                    paddingLeft: t === "✦" ? "22px" : "28px",
-                    paddingRight: t === "✦" ? "22px" : "0",
+                    minWidth: "28px",
+                    paddingBottom: "6px",
+                    transition: "color 0.3s",
+                  }}
+                  className="group-hover:text-[#1a1a1a]"
+                >
+                  {num}
+                </motion.span>
+
+                {/* Texte principal */}
+                <div className="flex-1 overflow-hidden">
+                  <motion.p
+                    initial={{ y: "100%" }}
+                    animate={{ y: "0%" }}
+                    transition={{ duration: 0.65, delay: delay + 0.15, ease: [0.22, 1, 0.36, 1] }}
+                    style={{
+                      fontSize: "clamp(1.9rem, 4.8vw, 3.8rem)",
+                      fontWeight: 900,
+                      lineHeight: 1.0,
+                      color: "#1a1a1a",
+                      fontFamily: "var(--font-heading), sans-serif",
+                      letterSpacing: "-0.025em",
+                    }}
+                  >
+                    {main}
+                  </motion.p>
+                </div>
+
+                {/* Sous-texte aligné à droite */}
+                <motion.p
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: delay + 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  style={{
+                    fontSize: "clamp(0.65rem, 1vw, 0.85rem)",
+                    fontWeight: 700,
+                    letterSpacing: "0.3em",
+                    color: "#aaaaaa",
                     textTransform: "uppercase",
-                    lineHeight: 1,
+                    fontFamily: "var(--font-jakarta), sans-serif",
+                    textAlign: "right",
+                    minWidth: "clamp(100px, 18vw, 200px)",
+                    paddingBottom: "6px",
                   }}
                 >
-                  {t}
-                </span>
-              ))}
-            </span>
+                  {sub}
+                </motion.p>
+              </div>
+            </motion.div>
           ))}
+
+          {/* Ligne de fermeture */}
+          <motion.div
+            style={{ borderTop: "1px solid rgba(26,26,26,0.12)" }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 2.0 }}
+          />
+
         </div>
       </div>
 
