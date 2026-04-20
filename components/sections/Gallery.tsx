@@ -1,73 +1,41 @@
 "use client";
 
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useRef,
-} from "react";
-import {
-  motion,
-  AnimatePresence,
-  useMotionValue,
-  useTransform,
-  useSpring,
-} from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { GALLERY_ITEMS } from "@/lib/constants";
 import type { GalleryItem } from "@/lib/types";
 
-type Filter = "all" | GalleryItem["category"];
-
-const FILTERS: { value: Filter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "design", label: "Graphic Design" },
-  { value: "video", label: "Video Editing" },
-];
-
 /* ─────────────────────────────────────────────────────────── */
 export function Gallery() {
-  const [active, setActive] = useState<Filter>("all");
   const [lightbox, setLightbox] = useState<GalleryItem | null>(null);
 
-  const filtered =
-    active === "all"
-      ? GALLERY_ITEMS
-      : GALLERY_ITEMS.filter((item) => item.category === active);
-
   const closeLightbox = useCallback(() => setLightbox(null), []);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeLightbox();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [closeLightbox]);
-
-  useEffect(() => {
-    document.body.style.overflow = lightbox ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [lightbox]);
 
   const navigate = useCallback(
     (dir: 1 | -1) => {
       if (!lightbox) return;
-      const idx = filtered.findIndex((i) => i.id === lightbox.id);
-      setLightbox(filtered[(idx + dir + filtered.length) % filtered.length]);
+      const idx = GALLERY_ITEMS.findIndex((i) => i.id === lightbox.id);
+      setLightbox(GALLERY_ITEMS[(idx + dir + GALLERY_ITEMS.length) % GALLERY_ITEMS.length]);
     },
-    [lightbox, filtered]
+    [lightbox]
   );
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
       if (!lightbox) return;
       if (e.key === "ArrowRight") navigate(1);
       if (e.key === "ArrowLeft") navigate(-1);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [lightbox, navigate]);
+  }, [lightbox, closeLightbox, navigate]);
+
+  useEffect(() => {
+    document.body.style.overflow = lightbox ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [lightbox]);
 
   return (
     <section
@@ -75,161 +43,78 @@ export function Gallery() {
       className="relative overflow-hidden"
       style={{ background: "#0d0d0d" }}
     >
-      {/* ── Ambient glow blobs ── */}
-      <div
-        aria-hidden
-        className="absolute top-0 left-1/4 w-[600px] h-[600px] rounded-full pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%)",
-          transform: "translate(-50%, -30%)",
-        }}
-      />
-      <div
-        aria-hidden
-        className="absolute bottom-0 right-1/4 w-[500px] h-[500px] rounded-full pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 70%)",
-          transform: "translate(40%, 30%)",
-        }}
-      />
+      <div className="max-w-6xl mx-auto px-6 py-20">
 
-      {/* ── Manifesto block ── */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 pt-28 pb-16">
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-[11px] font-bold tracking-[0.3em] uppercase mb-6"
-          style={{ color: "rgba(0,212,255,0.7)" }}
-        >
-          Creative Direction
-        </motion.p>
+        {/* ── Header ── */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-8 mb-12">
+          <div>
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+              className="text-[11px] font-bold tracking-[0.3em] uppercase mb-4"
+              style={{ color: "rgba(0,212,255,0.7)" }}
+            >
+              Creative Direction
+            </motion.p>
 
-        <div className="overflow-hidden mb-4">
-          <motion.h2
-            initial={{ y: "100%" }}
-            whileInView={{ y: 0 }}
+            <div className="overflow-hidden">
+              <motion.h2
+                initial={{ y: "100%" }}
+                whileInView={{ y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                className="font-heading font-black leading-none tracking-tight"
+                style={{
+                  fontSize: "clamp(2.4rem, 6vw, 5rem)",
+                  color: "rgba(255,255,255,0.12)",
+                  WebkitTextStroke: "1px rgba(255,255,255,0.18)",
+                }}
+              >
+                AI executes.{" "}
+                <span style={{ color: "#fff", WebkitTextStroke: "0px" }}>
+                  I create.
+                </span>
+              </motion.h2>
+            </div>
+          </div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="font-heading font-black leading-none tracking-tight"
-            style={{
-              fontSize: "clamp(3rem, 9vw, 7.5rem)",
-              color: "rgba(255,255,255,0.12)",
-              WebkitTextStroke: "1px rgba(255,255,255,0.18)",
-            }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="text-sm leading-relaxed max-w-sm"
+            style={{ color: "rgba(255,255,255,0.4)" }}
           >
-            AI executes.
-          </motion.h2>
+            Creativity, vision, and strategy to stand out — still human.
+            <span style={{ color: "rgba(0,212,255,0.8)" }}> Impossible to ignore.</span>
+          </motion.p>
         </div>
 
-        <div className="overflow-hidden mb-10">
-          <motion.h2
-            initial={{ y: "100%" }}
-            whileInView={{ y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.12, ease: [0.22, 1, 0.36, 1] }}
-            className="font-heading font-black leading-none tracking-tight text-white"
-            style={{ fontSize: "clamp(3rem, 9vw, 7.5rem)" }}
-          >
-            I create.
-          </motion.h2>
-        </div>
-
+        {/* ── Compact thumbnail strip ── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.3 }}
-          className="max-w-2xl"
+          transition={{ duration: 0.7, delay: 0.15 }}
+          className="grid grid-cols-3 gap-3"
         >
-          <p
-            className="text-lg leading-relaxed font-work"
-            style={{ color: "rgba(255,255,255,0.55)" }}
-          >
-            Yes, AI can materialize your idea — but{" "}
-            <span className="text-white font-semibold">
-              creativity, vision, and the strategy to stand out
-            </span>{" "}
-            are still human. I don&apos;t just sell services — I deliver the
-            creative edge and marketing intelligence that make your brand{" "}
-            <span style={{ color: "#00d4ff" }} className="font-semibold">
-              impossible to ignore.
-            </span>
-          </p>
+          {GALLERY_ITEMS.map((item, i) => (
+            <Thumb key={item.id} item={item} index={i} onClick={() => setLightbox(item)} />
+          ))}
         </motion.div>
 
-        {/* Divider */}
+        {/* ── Bottom line ── */}
         <motion.div
           initial={{ scaleX: 0 }}
           whileInView={{ scaleX: 1 }}
           viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-14 h-px origin-left"
-          style={{ background: "rgba(255,255,255,0.08)" }}
+          transition={{ duration: 1, delay: 0.4 }}
+          className="mt-10 h-px origin-left"
+          style={{ background: "rgba(255,255,255,0.06)" }}
         />
-      </div>
-
-      {/* ── Gallery body ── */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 pb-28">
-
-        {/* Filter tabs */}
-        <div className="flex flex-wrap gap-2 mb-12">
-          {FILTERS.map(({ value, label }) => (
-            <button
-              key={value}
-              onClick={() => setActive(value)}
-              className="text-xs font-bold tracking-widest uppercase px-5 py-2.5 rounded-full border transition-all duration-200"
-              style={
-                active === value
-                  ? {
-                      background: "#ffffff",
-                      borderColor: "#ffffff",
-                      color: "#0d0d0d",
-                    }
-                  : {
-                      background: "transparent",
-                      borderColor: "rgba(255,255,255,0.15)",
-                      color: "rgba(255,255,255,0.45)",
-                    }
-              }
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-
-        {/* Masonry grid */}
-        <AnimatePresence mode="popLayout">
-          <motion.div
-            key={active}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="columns-1 sm:columns-2 lg:columns-3 gap-4"
-          >
-            {filtered.map((item, i) => (
-              <GalleryCard
-                key={item.id}
-                item={item}
-                index={i}
-                onClick={() => setLightbox(item)}
-              />
-            ))}
-          </motion.div>
-        </AnimatePresence>
-
-        {filtered.length === 0 && (
-          <p
-            className="text-center py-20 text-sm"
-            style={{ color: "rgba(255,255,255,0.3)" }}
-          >
-            No items in this category yet.
-          </p>
-        )}
       </div>
 
       {/* ── Lightbox ── */}
@@ -247,8 +132,8 @@ export function Gallery() {
   );
 }
 
-/* ─── 3D Tilt Card ──────────────────────────────────────────── */
-function GalleryCard({
+/* ─── Thumbnail ─────────────────────────────────────────────── */
+function Thumb({
   item,
   index,
   onClick,
@@ -257,126 +142,58 @@ function GalleryCard({
   index: number;
   onClick: () => void;
 }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  const rawX = useMotionValue(0);
-  const rawY = useMotionValue(0);
-  const rotateX = useSpring(useTransform(rawY, [-0.5, 0.5], [7, -7]), {
-    stiffness: 200, damping: 25,
-  });
-  const rotateY = useSpring(useTransform(rawX, [-0.5, 0.5], [-7, 7]), {
-    stiffness: 200, damping: 25,
-  });
-  const glareX = useTransform(rawX, [-0.5, 0.5], ["0%", "100%"]);
-  const glareY = useTransform(rawY, [-0.5, 0.5], ["0%", "100%"]);
-
-  const onMouseMove = (e: React.MouseEvent) => {
-    const rect = cardRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    rawX.set((e.clientX - rect.left) / rect.width - 0.5);
-    rawY.set((e.clientY - rect.top) / rect.height - 0.5);
-  };
-  const onMouseLeave = () => {
-    rawX.set(0);
-    rawY.set(0);
-  };
-
-  const thumb = item.thumbnail ?? item.src;
-  const isVideo = item.type === "video";
-  const isDesign = item.category === "design";
-
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 32 }}
+    <motion.button
+      initial={{ opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-40px" }}
-      transition={{
-        duration: 0.65,
-        delay: (index % 6) * 0.07,
-        ease: [0.22, 1, 0.36, 1],
-      }}
-      className="break-inside-avoid mb-4"
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: index * 0.08 }}
+      whileHover="hover"
+      onClick={onClick}
+      className="group relative overflow-hidden rounded-lg text-left focus:outline-none"
+      style={{ aspectRatio: "3/4" }}
+      aria-label={`View ${item.title}`}
     >
+      <Image
+        src={item.thumbnail ?? item.src}
+        alt={item.title}
+        fill
+        className="object-cover transition-transform duration-500 group-hover:scale-105"
+        sizes="(max-width: 768px) 33vw, 25vw"
+      />
+
+      {/* Dark overlay */}
+      <div
+        className="absolute inset-0 transition-opacity duration-300 opacity-0 group-hover:opacity-100"
+        style={{ background: "rgba(0,0,0,0.55)" }}
+      />
+
+      {/* Zoom icon */}
       <motion.div
-        ref={cardRef}
-        onMouseMove={onMouseMove}
-        onMouseLeave={onMouseLeave}
-        style={{
-          rotateX,
-          rotateY,
-          transformPerspective: 900,
-          transformStyle: "preserve-3d",
-        }}
-        className="group relative rounded-2xl overflow-hidden cursor-pointer"
-        onClick={onClick}
-        role="button"
-        tabIndex={0}
-        aria-label={`View ${item.title}`}
-        onKeyDown={(e) => e.key === "Enter" && onClick()}
-        whileHover={{ scale: 1.015 }}
-        transition={{ duration: 0.2 }}
+        variants={{ hover: { opacity: 1, scale: 1 } }}
+        initial={{ opacity: 0, scale: 0.8 }}
+        className="absolute inset-0 flex flex-col items-center justify-center gap-2 pointer-events-none"
       >
-        {/* Image */}
-        <Image
-          src={thumb}
-          alt={item.title}
-          width={600}
-          height={400}
-          className="w-full h-auto block transition-transform duration-700 group-hover:scale-105"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
-
-        {/* Glare sheen */}
-        <motion.div
-          aria-hidden
-          className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl"
-          style={{
-            background: `radial-gradient(circle at ${glareX} ${glareY}, rgba(255,255,255,0.08), transparent 65%)`,
-          }}
-        />
-
-        {/* Dark gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-2xl" />
-
-        {/* Info reveal */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-350">
-          <span
-            className="inline-block text-[9px] font-black tracking-[0.22em] uppercase px-2.5 py-1 rounded-full mb-2"
-            style={{
-              background: isDesign
-                ? "rgba(0,212,255,0.2)"
-                : "rgba(124,58,237,0.25)",
-              color: isDesign ? "#00d4ff" : "#a78bfa",
-              border: `1px solid ${isDesign ? "rgba(0,212,255,0.3)" : "rgba(124,58,237,0.35)"}`,
-            }}
-          >
-            {isDesign ? "Graphic Design" : "Video"}
-          </span>
-          <p className="text-white font-bold text-sm leading-snug">{item.title}</p>
-          {item.year && (
-            <p className="text-white/50 text-xs mt-0.5">{item.year}</p>
-          )}
+        <div
+          className="w-9 h-9 rounded-full flex items-center justify-center"
+          style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.2)" }}
+        >
+          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8}
+              d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0zM11 8v6M8 11h6" />
+          </svg>
         </div>
-
-        {/* Video play button */}
-        {isVideo && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div
-              className="w-14 h-14 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
-              style={{
-                background: "rgba(255,255,255,0.15)",
-                backdropFilter: "blur(8px)",
-                border: "1px solid rgba(255,255,255,0.25)",
-              }}
-            >
-              <svg className="w-5 h-5 text-white ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z" />
-              </svg>
-            </div>
-          </div>
-        )}
+        <span className="text-white text-xs font-semibold tracking-wide opacity-80">{item.title}</span>
       </motion.div>
-    </motion.div>
+
+      {/* Index badge */}
+      <span
+        className="absolute top-2.5 left-2.5 text-[10px] font-black tabular-nums"
+        style={{ color: "rgba(255,255,255,0.25)" }}
+      >
+        0{index + 1}
+      </span>
+    </motion.button>
   );
 }
 
@@ -394,132 +211,74 @@ function Lightbox({
 }) {
   return (
     <motion.div
-      key="lb-backdrop"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.25 }}
+      transition={{ duration: 0.22 }}
       className="fixed inset-0 z-[200] flex items-center justify-center px-4"
-      style={{ background: "rgba(0,0,0,0.94)", backdropFilter: "blur(12px)" }}
+      style={{ background: "rgba(0,0,0,0.94)", backdropFilter: "blur(14px)" }}
       onClick={onClose}
     >
       <motion.div
         key={item.id}
-        initial={{ opacity: 0, scale: 0.92, y: 20 }}
+        initial={{ opacity: 0, scale: 0.93, y: 16 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.92, y: 20 }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="relative max-w-5xl w-full"
+        exit={{ opacity: 0, scale: 0.93, y: 16 }}
+        transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+        className="relative max-w-4xl w-full"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute -top-12 right-0 transition-colors z-10"
-          style={{ color: "rgba(255,255,255,0.5)" }}
+          className="absolute -top-11 right-0 transition-colors z-10"
+          style={{ color: "rgba(255,255,255,0.45)" }}
           onMouseEnter={(e) => (e.currentTarget.style.color = "#fff")}
-          onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.5)")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.45)")}
           aria-label="Close"
         >
-          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
 
-        {/* Media */}
-        <div
-          className="rounded-2xl overflow-hidden"
-          style={{ boxShadow: "0 32px 80px rgba(0,0,0,0.6)" }}
-        >
-          {item.type === "video" ? (
-            <video
-              src={item.src}
-              controls
-              autoPlay
-              className="w-full max-h-[72vh] object-contain bg-black"
-            />
-          ) : (
-            <Image
-              src={item.src}
-              alt={item.title}
-              width={1400}
-              height={900}
-              className="w-full max-h-[72vh] object-contain bg-black"
-              priority
-            />
-          )}
+        {/* Image */}
+        <div className="rounded-xl overflow-hidden" style={{ boxShadow: "0 24px 64px rgba(0,0,0,0.6)" }}>
+          <Image
+            src={item.src}
+            alt={item.title}
+            width={1400}
+            height={900}
+            className="w-full max-h-[74vh] object-contain bg-black"
+            priority
+          />
         </div>
 
-        {/* Info + nav */}
-        <div className="mt-5 flex items-end justify-between gap-4">
-          <div className="flex-1 min-w-0">
-            <p className="text-white font-bold text-base truncate">{item.title}</p>
-            <div className="flex flex-wrap gap-1.5 mt-2">
-              {item.tags?.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-                  style={{
-                    background: "rgba(255,255,255,0.08)",
-                    color: "rgba(255,255,255,0.45)",
-                  }}
-                >
-                  {tag}
-                </span>
-              ))}
-              {item.year && (
-                <span
-                  className="text-[10px] font-medium px-2 py-0.5 rounded-full"
-                  style={{
-                    background: "rgba(255,255,255,0.08)",
-                    color: "rgba(255,255,255,0.45)",
-                  }}
-                >
-                  {item.year}
-                </span>
-              )}
-            </div>
+        {/* Footer */}
+        <div className="mt-4 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-white font-bold text-sm">{item.title}</p>
+            {item.year && (
+              <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>{item.year}</p>
+            )}
           </div>
 
-          <div className="flex gap-2 shrink-0">
-            <button
-              onClick={onPrev}
-              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                color: "rgba(255,255,255,0.7)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.16)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)";
-              }}
-              aria-label="Previous"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-            <button
-              onClick={onNext}
-              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
-              style={{
-                background: "rgba(255,255,255,0.08)",
-                color: "rgba(255,255,255,0.7)",
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.16)";
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLButtonElement).style.background = "rgba(255,255,255,0.08)";
-              }}
-              aria-label="Next"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+          <div className="flex gap-2">
+            {[{ fn: onPrev, label: "Previous", d: "M15 19l-7-7 7-7" }, { fn: onNext, label: "Next", d: "M9 5l7 7-7 7" }].map(({ fn, label, d }) => (
+              <button
+                key={label}
+                onClick={fn}
+                aria-label={label}
+                className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+                style={{ background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.6)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.14)")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.07)")}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={d} />
+                </svg>
+              </button>
+            ))}
           </div>
         </div>
       </motion.div>
