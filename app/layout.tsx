@@ -17,6 +17,7 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://dev-thierry.vercel.app"),
   title: "Dev Thierry — Full-Stack Developer & AI Agent Dev",
   description:
     "Senior developer with 7 years of experience in Web Development, Web3, and AI Agent architecture. Building for the web, on-chain, and beyond.",
@@ -36,6 +37,14 @@ export const metadata: Metadata = {
     description:
       "7 years building for the web. From full-stack SaaS to DeFi protocols to autonomous AI agents.",
     type: "website",
+    url: "https://dev-thierry.vercel.app",
+    siteName: "Dev Thierry",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Dev Thierry — Full-Stack Developer & AI Agent Dev",
+    description:
+      "7 years building for the web. From full-stack SaaS to DeFi protocols to autonomous AI agents.",
   },
 };
 
