@@ -36,7 +36,16 @@ function stripTag(html: string, tag: string) {
 }
 
 function innerText(html: string) {
+  // Add space before tags to prevent word concatenation (e.g. "Web,Web3")
   return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function cleanText(text: string) {
+  // Fix missing spaces after punctuation (e.g. "Web,Web3" → "Web, Web3")
+  return text
+    .replace(/([,.:;!?])([^\s\d])/g, "$1 $2")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function extractContent(html: string, url: string) {
@@ -59,32 +68,34 @@ function extractContent(html: string, url: string) {
     "";
 
   // Headings from cleaned body (no nav)
-  const h1 = clean.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1]?.replace(/<[^>]+>/g, "").trim() ?? "";
+  const h1 = cleanText(clean.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1]?.replace(/<[^>]+>/g, "") ?? "");
 
   const h2Matches: string[] = [];
   const h2Regex = /<h2[^>]*>([\s\S]*?)<\/h2>/gi;
   let h2Match;
   while ((h2Match = h2Regex.exec(clean)) !== null && h2Matches.length < 6) {
-    const text = innerText(h2Match[1]);
+    const text = cleanText(innerText(h2Match[1]));
     if (text.length > 2) h2Matches.push(text);
   }
 
-  // Paragraphs — the actual content
+  // Paragraphs — real content only (min 30 chars, skip short fragments)
   const paraMatches: string[] = [];
   const paraRegex = /<p[^>]*>([\s\S]*?)<\/p>/gi;
   let paraMatch;
-  while ((paraMatch = paraRegex.exec(clean)) !== null && paraMatches.length < 8) {
-    const text = innerText(paraMatch[1]);
-    if (text.length > 20) paraMatches.push(text);
+  while ((paraMatch = paraRegex.exec(clean)) !== null && paraMatches.length < 6) {
+    const text = cleanText(innerText(paraMatch[1]));
+    if (text.length > 30) paraMatches.push(text);
   }
 
-  // CTAs — buttons and links with short text (excluding nav)
+  // CTAs — only real action-oriented links/buttons (exclude gallery filenames, numbers, etc.)
   const ctaMatches: string[] = [];
   const ctaRegex = /<(?:a|button)[^>]*>([\s\S]*?)<\/(?:a|button)>/gi;
   let ctaMatch;
   while ((ctaMatch = ctaRegex.exec(clean)) !== null && ctaMatches.length < 8) {
-    const text = innerText(ctaMatch[1]);
-    if (text.length > 2 && text.length < 50) ctaMatches.push(text);
+    const text = cleanText(innerText(ctaMatch[1]));
+    // Skip: too short, too long, looks like a filename/number, contains # symbols
+    const looksLikeFilename = /\d{2}$/.test(text) || /^[#\d]/.test(text);
+    if (text.length > 3 && text.length < 45 && !looksLikeFilename) ctaMatches.push(text);
   }
 
   return {
