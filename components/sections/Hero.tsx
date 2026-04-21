@@ -202,15 +202,18 @@ export function Hero() {
                 transition={{ duration: 0.7, delay: delay + 0.1, ease: [0.22, 1, 0.36, 1] }}
               />
 
+              {/* Mobile: num+sub ligne 1, main ligne 2 pleine largeur
+                  Desktop: num | main (flex-1) | sub — tout sur une ligne */}
               <div
-                className="flex items-end justify-between gap-6 py-7 cursor-default"
+                className="flex flex-wrap items-end justify-between gap-x-6 py-7 cursor-default"
                 style={{ paddingLeft: "0", paddingRight: "0" }}
               >
-                {/* Numéro */}
+                {/* Numéro — toujours en premier */}
                 <motion.span
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: delay + 0.2 }}
+                  className="order-1 group-hover:text-[#1a1a1a]"
                   style={{
                     fontSize: "0.7rem",
                     fontWeight: 700,
@@ -221,13 +224,32 @@ export function Hero() {
                     paddingBottom: "6px",
                     transition: "color 0.3s",
                   }}
-                  className="group-hover:text-[#1a1a1a]"
                 >
                   {num}
                 </motion.span>
 
-                {/* Texte principal */}
-                <div className="flex-1 overflow-hidden">
+                {/* Sous-texte: ordre 2 sur mobile (même ligne que num), ordre 3 sur desktop */}
+                <motion.p
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.6, delay: delay + 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  className="order-2 sm:order-3 sm:min-w-[clamp(100px,18vw,200px)]"
+                  style={{
+                    fontSize: "clamp(0.65rem, 2.5vw, 0.85rem)",
+                    fontWeight: 700,
+                    letterSpacing: "0.3em",
+                    color: "#aaaaaa",
+                    textTransform: "uppercase",
+                    fontFamily: "var(--font-jakarta), sans-serif",
+                    textAlign: "right",
+                    paddingBottom: "6px",
+                  }}
+                >
+                  {sub}
+                </motion.p>
+
+                {/* Texte principal: pleine largeur sur mobile (nouvelle ligne), flex-1 sur desktop */}
+                <div className="order-3 sm:order-2 w-full sm:w-auto sm:flex-1 overflow-hidden">
                   <motion.p
                     initial={{ y: "100%" }}
                     animate={{ y: "0%" }}
@@ -235,7 +257,7 @@ export function Hero() {
                     style={{
                       fontSize: "clamp(1.9rem, 4.8vw, 3.8rem)",
                       fontWeight: 900,
-                      lineHeight: 1.0,
+                      lineHeight: 1.05,
                       color: "#1a1a1a",
                       fontFamily: "var(--font-heading), sans-serif",
                       letterSpacing: "-0.025em",
@@ -244,26 +266,6 @@ export function Hero() {
                     {main}
                   </motion.p>
                 </div>
-
-                {/* Sous-texte aligné à droite */}
-                <motion.p
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.6, delay: delay + 0.35, ease: [0.22, 1, 0.36, 1] }}
-                  style={{
-                    fontSize: "clamp(0.65rem, 1vw, 0.85rem)",
-                    fontWeight: 700,
-                    letterSpacing: "0.3em",
-                    color: "#aaaaaa",
-                    textTransform: "uppercase",
-                    fontFamily: "var(--font-jakarta), sans-serif",
-                    textAlign: "right",
-                    minWidth: "clamp(100px, 18vw, 200px)",
-                    paddingBottom: "6px",
-                  }}
-                >
-                  {sub}
-                </motion.p>
               </div>
             </motion.div>
           ))}
