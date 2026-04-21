@@ -31,44 +31,71 @@ Rules:
 - If the site is actually good, still find 3 things to roast (nothing is perfect)
 - Always end with a hint of genuine encouragement`;
 
+function stripTag(html: string, tag: string) {
+  return html.replace(new RegExp(`<${tag}[\\s\\S]*?<\\/${tag}>`, "gi"), "");
+}
+
+function innerText(html: string) {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 function extractContent(html: string, url: string) {
-  // Strip scripts and styles
-  const clean = html
+  // Remove noise: scripts, styles, comments
+  let clean = html
     .replace(/<script[\s\S]*?<\/script>/gi, "")
     .replace(/<style[\s\S]*?<\/style>/gi, "")
     .replace(/<!--[\s\S]*?-->/g, "");
 
-  const title = clean.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.trim() ?? "";
+  // Remove navigation, header, footer — these cause "DTDevThierry" style noise
+  clean = stripTag(clean, "nav");
+  clean = stripTag(clean, "header");
+  clean = stripTag(clean, "footer");
+
+  // Meta
+  const title = html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.trim() ?? "";
   const description =
-    clean.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']{0,300})/i)?.[1] ??
-    clean.match(/<meta[^>]*content=["']([^"']{0,300})[^>]*name=["']description["']/i)?.[1] ??
+    html.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']{0,300})/i)?.[1] ??
+    html.match(/<meta[^>]*content=["']([^"']{0,300})[^>]*name=["']description["']/i)?.[1] ??
     "";
+
+  // Headings from cleaned body (no nav)
   const h1 = clean.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1]?.replace(/<[^>]+>/g, "").trim() ?? "";
+
   const h2Matches: string[] = [];
   const h2Regex = /<h2[^>]*>([\s\S]*?)<\/h2>/gi;
   let h2Match;
   while ((h2Match = h2Regex.exec(clean)) !== null && h2Matches.length < 6) {
-    const text = h2Match[1].replace(/<[^>]+>/g, "").trim();
-    if (text) h2Matches.push(text);
+    const text = innerText(h2Match[1]);
+    if (text.length > 2) h2Matches.push(text);
   }
-  const h2s = h2Matches;
 
+  // Paragraphs — the actual content
+  const paraMatches: string[] = [];
+  const paraRegex = /<p[^>]*>([\s\S]*?)<\/p>/gi;
+  let paraMatch;
+  while ((paraMatch = paraRegex.exec(clean)) !== null && paraMatches.length < 8) {
+    const text = innerText(paraMatch[1]);
+    if (text.length > 20) paraMatches.push(text);
+  }
+
+  // CTAs — buttons and links with short text (excluding nav)
   const ctaMatches: string[] = [];
   const ctaRegex = /<(?:a|button)[^>]*>([\s\S]*?)<\/(?:a|button)>/gi;
   let ctaMatch;
-  while ((ctaMatch = ctaRegex.exec(clean)) !== null && ctaMatches.length < 10) {
-    const text = ctaMatch[1].replace(/<[^>]+>/g, "").trim();
-    if (text.length > 2 && text.length < 60) ctaMatches.push(text);
+  while ((ctaMatch = ctaRegex.exec(clean)) !== null && ctaMatches.length < 8) {
+    const text = innerText(ctaMatch[1]);
+    if (text.length > 2 && text.length < 50) ctaMatches.push(text);
   }
-  const ctas = ctaMatches;
 
-  const bodyText = clean
-    .replace(/<[^>]+>/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, 1200);
-
-  return { url, title, description, h1, h2s, ctas, bodyText };
+  return {
+    url,
+    title,
+    description,
+    h1,
+    h2s: h2Matches,
+    paragraphs: paraMatches,
+    ctas: ctaMatches.filter((v, i, a) => a.indexOf(v) === i), // deduplicate
+  };
 }
 
 export async function POST(request: Request) {
@@ -106,9 +133,9 @@ URL: ${content.url}
 Title: ${content.title}
 Meta description: ${content.description || "(none)"}
 H1: ${content.h1 || "(none)"}
-H2s: ${content.h2s.length ? content.h2s.join(" | ") : "(none)"}
-CTAs found: ${content.ctas.length ? content.ctas.join(" | ") : "(none)"}
-Page text snippet: ${content.bodyText}`;
+H2 headings: ${content.h2s.length ? content.h2s.join(" | ") : "(none)"}
+Page paragraphs: ${content.paragraphs.length ? content.paragraphs.join(" // ") : "(none)"}
+CTAs / buttons: ${content.ctas.length ? content.ctas.join(" | ") : "(none)"}`;
 
     const stream = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
