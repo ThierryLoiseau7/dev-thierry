@@ -2,81 +2,6 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
-
-/* ─── Scramble Text ─── */
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
-
-function ScrambleText({
-  text,
-  delay = 0,
-  className = "",
-  style = {},
-}: {
-  text: string;
-  delay?: number;
-  className?: string;
-  style?: React.CSSProperties;
-}) {
-  const [display, setDisplay] = useState(() => text.split("").map(() => " "));
-  const resolvedRef = useRef(0);
-  const frameRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    let started = false;
-    const startTimeout = setTimeout(() => {
-      started = true;
-      let tick = 0;
-      const totalChars = text.length;
-      const ticksPerChar = 6;
-
-      const run = () => {
-        tick++;
-        const resolved = Math.floor(tick / ticksPerChar);
-        resolvedRef.current = resolved;
-
-        setDisplay(
-          text.split("").map((char, i) => {
-            if (char === " ") return " ";
-            if (i < resolved) return char;
-            return CHARS[Math.floor(Math.random() * CHARS.length)];
-          })
-        );
-
-        if (resolved < totalChars) {
-          frameRef.current = setTimeout(run, 40);
-        } else {
-          setDisplay(text.split(""));
-        }
-      };
-
-      run();
-    }, delay * 1000);
-
-    return () => {
-      clearTimeout(startTimeout);
-      if (frameRef.current) clearTimeout(frameRef.current);
-    };
-  }, [text, delay]);
-
-  return (
-    <span className={className} style={style}>
-      {display.map((char, i) => (
-        <span
-          key={i}
-          style={{
-            display: "inline-block",
-            whiteSpace: char === " " ? "pre" : "normal",
-            color: i < resolvedRef.current ? undefined : "rgba(26,26,26,0.35)",
-            transition: "color 0.1s",
-          }}
-        >
-          {char === " " ? "\u00A0" : char}
-        </span>
-      ))}
-    </span>
-  );
-}
 
 /* ─── Letter-by-Letter Animator ─── */
 function AdLetters({
@@ -112,26 +37,6 @@ function AdLetters({
         </motion.span>
       ))}
     </motion.span>
-  );
-}
-
-/* ─── Spinning Circular Text ─── */
-function SpinningCircleText() {
-  const text = "DEV THIERRY • FULL STACK DEV • AI AGENT • WEB3 • ";
-  return (
-    <div className="w-36 h-36 md:w-44 md:h-44 shrink-0 select-none pointer-events-none animate-spin-slow">
-      <svg viewBox="0 0 120 120" className="w-full h-full">
-        <defs>
-          <path
-            id="spinCircle"
-            d="M 60,60 m -46,0 a 46,46 0 1,1 92,0 a 46,46 0 1,1 -92,0"
-          />
-        </defs>
-        <text fontSize="8.5" fill="#1a1a1a" letterSpacing="3" opacity="0.75" fontFamily="Plus Jakarta Sans, sans-serif" fontWeight="600">
-          <textPath href="#spinCircle">{text}</textPath>
-        </text>
-      </svg>
-    </div>
   );
 }
 
