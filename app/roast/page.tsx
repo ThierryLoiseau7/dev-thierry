@@ -6,12 +6,7 @@ import Link from "next/link";
 
 const SHARE_URL = "dev-thierry.vercel.app/roast";
 
-const SEVERITY: Record<string, { bg: string; text: string }> = {
-  CRITICAL: { bg: "#fee2e2", text: "#dc2626" },
-  HIGH:     { bg: "#ffedd5", text: "#ea580c" },
-};
-
-function ResultLine({ line, i }: { line: string; i: number }) {
+function ResultLine({ line }: { line: string }) {
   if (line.startsWith("## Overall Verdict")) {
     return (
       <p className="text-[10px] font-black tracking-[0.25em] uppercase text-[#888888] mt-2 mb-1">
@@ -184,7 +179,7 @@ export default function RoastPage() {
             <span className="text-[#888888]">Website 🔥</span>
           </h1>
           <p className="text-sm text-[#888888] max-w-lg mx-auto">
-            Colle l'URL de ton site → l'IA te dit la vérité brutale sur ton design, ton copy et ton UX.
+            Colle l&apos;URL de ton site → l&apos;IA te dit la vérité brutale sur ton design, ton copy et ton UX.
             <strong className="text-[#1a1a1a]"> Gratuit. Sans pitié.</strong>
           </p>
         </motion.div>
@@ -285,7 +280,7 @@ export default function RoastPage() {
               {result && (
                 <div className="bg-white px-6 py-6">
                   {result.split("\n").map((line, i) => (
-                    <ResultLine key={i} line={line} i={i} />
+                    <ResultLine key={i} line={line} />
                   ))}
                   {loading && (
                     <span className="inline-block w-[3px] h-4 bg-[#1a1a1a] animate-pulse ml-0.5 align-middle" />
@@ -357,8 +352,8 @@ export default function RoastPage() {
             style={{ borderTop: "1px solid rgba(26,26,26,0.1)" }}
           >
             <div>
-              <p className="font-heading font-bold text-[#1a1a1a] text-lg">Ton site a besoin d'un vrai fix ?</p>
-              <p className="text-sm text-[#888888] mt-0.5">Je construis et j'améliore des sites — Web, Web3 & AI.</p>
+              <p className="font-heading font-bold text-[#1a1a1a] text-lg">Ton site a besoin d&apos;un vrai fix ?</p>
+              <p className="text-sm text-[#888888] mt-0.5">Je construis et j&apos;améliore des sites — Web, Web3 &amp; AI.</p>
             </div>
             <Link
               href="/#contact"
