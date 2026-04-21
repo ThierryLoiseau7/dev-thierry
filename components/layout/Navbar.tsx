@@ -138,6 +138,20 @@ export function Navbar() {
             })}
           </nav>
 
+          {/* Free Audit link */}
+          <a
+            href="/audit"
+            className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 hover:opacity-80 shrink-0"
+            style={{
+              background: dark ? "rgba(40,200,64,0.15)" : "rgba(26,26,26,0.07)",
+              color: dark ? "#28c840" : "#1a1a1a",
+              letterSpacing: "0.04em",
+            }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-[#28c840] animate-pulse shrink-0" />
+            Free Audit
+          </a>
+
           {/* CTA */}
           <a
             href="#contact"
@@ -196,9 +210,21 @@ export function Navbar() {
                 </a>
               ))}
               <a
+                href="/audit"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold"
+                style={{
+                  background: dark ? "rgba(40,200,64,0.15)" : "rgba(26,26,26,0.07)",
+                  color: dark ? "#28c840" : "#1a1a1a",
+                }}
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-[#28c840] animate-pulse" />
+                Free Audit
+              </a>
+              <a
                 href="#contact"
                 onClick={() => setMobileOpen(false)}
-                className="mt-2 px-4 py-3 rounded-xl text-sm font-semibold text-center"
+                className="mt-1 px-4 py-3 rounded-xl text-sm font-semibold text-center"
                 style={{ background: ctaBg, color: ctaText }}
               >
                 Start Your Project
