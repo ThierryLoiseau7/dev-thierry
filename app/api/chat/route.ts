@@ -1,7 +1,10 @@
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { AGENT_SYSTEM_PROMPT } from "@/lib/constants";
 
-const client = new Anthropic();
+const groq = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY!,
+  baseURL: "https://api.groq.com/openai/v1",
+});
 
 interface RequestMessage {
   role: "user" | "assistant";
@@ -17,25 +20,23 @@ export async function POST(request: Request) {
       return new Response("Invalid messages", { status: 400 });
     }
 
-    // Keep last 20 messages to avoid token overrun
     const trimmed = messages.slice(-20).filter((m) => m.content?.trim());
 
-    const stream = await client.messages.stream({
-      model: "claude-sonnet-4-6",
+    const stream = await groq.chat.completions.create({
+      model: "llama-3.3-70b-versatile",
       max_tokens: 512,
-      system: AGENT_SYSTEM_PROMPT,
-      messages: trimmed,
+      stream: true,
+      messages: [
+        { role: "system", content: AGENT_SYSTEM_PROMPT },
+        ...trimmed,
+      ],
     });
 
     const readable = new ReadableStream({
       async start(controller) {
         for await (const chunk of stream) {
-          if (
-            chunk.type === "content_block_delta" &&
-            chunk.delta.type === "text_delta"
-          ) {
-            controller.enqueue(new TextEncoder().encode(chunk.delta.text));
-          }
+          const text = chunk.choices[0]?.delta?.content ?? "";
+          if (text) controller.enqueue(new TextEncoder().encode(text));
         }
         controller.close();
       },
