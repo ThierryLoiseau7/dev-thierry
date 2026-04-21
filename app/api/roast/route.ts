@@ -36,8 +36,12 @@ function stripTag(html: string, tag: string) {
 }
 
 function innerText(html: string) {
-  // Add space before tags to prevent word concatenation (e.g. "Web,Web3")
-  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  // Convert <br> to space before stripping tags to avoid word concatenation
+  return html
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function cleanText(text: string) {
