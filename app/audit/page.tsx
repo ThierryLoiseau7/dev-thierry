@@ -4,28 +4,7 @@ import { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
-const SAMPLE_CONTRACT = `// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-contract SimpleVault {
-    mapping(address => uint256) public balances;
-
-    function deposit() public payable {
-        balances[msg.sender] += msg.value;
-    }
-
-    function withdraw(uint256 amount) public {
-        require(balances[msg.sender] >= amount, "Insufficient");
-        // ⚠ External call before state update
-        (bool ok, ) = msg.sender.call{value: amount}("");
-        require(ok, "Transfer failed");
-        balances[msg.sender] -= amount;
-    }
-
-    function getBalance() public view returns (uint256) {
-        return address(this).balance;
-    }
-}`;
+const SAMPLE_CONTRACT = ``;
 
 const SEVERITY: Record<string, { bg: string; text: string }> = {
   CRITICAL: { bg: "#fee2e2", text: "#dc2626" },
