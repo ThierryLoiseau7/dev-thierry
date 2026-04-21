@@ -138,19 +138,32 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Free Audit link */}
-          <a
-            href="/audit"
-            className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 hover:opacity-80 shrink-0"
-            style={{
-              background: dark ? "rgba(40,200,64,0.15)" : "rgba(26,26,26,0.07)",
-              color: dark ? "#28c840" : "#1a1a1a",
-              letterSpacing: "0.04em",
-            }}
-          >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#28c840] animate-pulse shrink-0" />
-            Free Audit
-          </a>
+          {/* Free tools */}
+          <div className="hidden md:flex items-center gap-2">
+            <a
+              href="/roast"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 hover:opacity-80 shrink-0"
+              style={{
+                background: dark ? "rgba(255,95,87,0.15)" : "rgba(255,95,87,0.1)",
+                color: dark ? "#ff5f57" : "#cc2200",
+                letterSpacing: "0.04em",
+              }}
+            >
+              🔥 Roast
+            </a>
+            <a
+              href="/audit"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 hover:opacity-80 shrink-0"
+              style={{
+                background: dark ? "rgba(40,200,64,0.15)" : "rgba(26,26,26,0.07)",
+                color: dark ? "#28c840" : "#1a1a1a",
+                letterSpacing: "0.04em",
+              }}
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-[#28c840] animate-pulse shrink-0" />
+              Free Audit
+            </a>
+          </div>
 
           {/* CTA */}
           <a
@@ -209,6 +222,14 @@ export function Navbar() {
                   {label}
                 </a>
               ))}
+              <a
+                href="/roast"
+                onClick={() => setMobileOpen(false)}
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold"
+                style={{ background: "rgba(255,95,87,0.1)", color: "#cc2200" }}
+              >
+                🔥 Roast My Website
+              </a>
               <a
                 href="/audit"
                 onClick={() => setMobileOpen(false)}
