@@ -53,7 +53,7 @@ export function AIAgent() {
         <SectionHeading
           label="AI Integration"
           title="Talk to My Agent"
-          subtitle="An AI that knows my work, my stack, and how I can help you build."
+          subtitle="Un vrai chatbot IA entraîné sur mon parcours, mon stack et mes projets. Pose-lui tes questions — il répond en direct."
         />
 
         <motion.div
