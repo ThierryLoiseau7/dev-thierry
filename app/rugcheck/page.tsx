@@ -4,14 +4,6 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
-type TrendingToken = {
-  address: string;
-  chain: string;
-  name: string | null;
-  icon: string | null;
-  url: string | null;
-};
-
 type HistoryItem = {
   address: string;
   name: string;
@@ -20,17 +12,6 @@ type HistoryItem = {
   verdict: "SAFE" | "RISKY" | "SCAM";
   score: number;
   analyzedAt: string;
-};
-
-const CHAIN_LABELS: Record<string, string> = {
-  ethereum: "ETH",
-  bsc: "BSC",
-  polygon: "POL",
-  base: "BASE",
-  arbitrum: "ARB",
-  avalanche: "AVAX",
-  solana: "SOL",
-  optimism: "OP",
 };
 
 type RugResult = {
@@ -127,15 +108,10 @@ export default function RugCheckPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RugResult | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [trending, setTrending] = useState<TrendingToken[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
 
   useEffect(() => {
     setHistory(getHistory());
-    fetch("/api/trending")
-      .then((r) => r.json())
-      .then((d) => setTrending(d.tokens ?? []))
-      .catch(() => {});
   }, []);
 
   const analyze = async () => {
@@ -540,45 +516,6 @@ export default function RugCheckPage() {
             className="flex flex-col gap-8"
           >
 
-            {/* Trending Tokens */}
-            {trending.length > 0 && (
-              <div className="min-w-0">
-                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4">
-                  <span className="text-base">🔥</span>
-                  <p className="text-[10px] font-black tracking-[0.25em] uppercase text-[#888888]">Trending Now</p>
-                  <span className="text-[10px] text-[#aaaaaa]">— top tokens kounye a</span>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  {trending.map((t) => (
-                    <button
-                      key={t.address}
-                      onClick={() => { setAddress(String(t.address)); }}
-                      className="flex flex-col items-start gap-2 p-3 rounded-2xl text-left transition-all hover:scale-[1.02] active:scale-[0.98] overflow-hidden min-w-0"
-                      style={{ background: "#ffffff", border: "1px solid rgba(26,26,26,0.1)" }}
-                    >
-                      <div className="flex items-center gap-1.5 w-full min-w-0">
-                        {t.icon ? (
-                          <img src={t.icon} alt="" className="w-6 h-6 rounded-full object-cover shrink-0" />
-                        ) : (
-                          <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs" style={{ background: "rgba(26,26,26,0.06)" }}>🪙</div>
-                        )}
-                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md shrink-0" style={{ background: "rgba(26,26,26,0.06)", color: "#888888" }}>
-                          {CHAIN_LABELS[t.chain] ?? t.chain.slice(0, 4).toUpperCase()}
-                        </span>
-                      </div>
-                      {t.name && (
-                        <p className="text-[11px] font-semibold text-[#1a1a1a] leading-tight line-clamp-2 w-full break-words">{t.name}</p>
-                      )}
-                      <p className="text-[9px] font-mono text-[#aaaaaa] w-full overflow-hidden" style={{ textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                        {String(t.address).slice(0, 8)}...
-                      </p>
-                      <span className="text-[10px] font-bold text-[#1a1a1a] mt-auto">Analyze →</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Recent History */}
             {history.length > 0 && (
               <div>
@@ -599,7 +536,7 @@ export default function RugCheckPage() {
                         <div className="flex items-center gap-3">
                           <div>
                             <p className="text-sm font-bold text-[#1a1a1a]">{h.name} <span className="text-[#aaaaaa] font-normal">${h.symbol}</span></p>
-                            <p className="text-[11px] text-[#aaaaaa]">{CHAIN_LABELS[h.chain] ?? h.chain.toUpperCase()} · {h.analyzedAt}</p>
+                            <p className="text-[11px] text-[#aaaaaa]">{CHAIN_LABELS_FULL[h.chain] ?? h.chain.toUpperCase()} · {h.analyzedAt}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 shrink-0">
@@ -614,7 +551,7 @@ export default function RugCheckPage() {
             )}
 
             {/* Empty state with community CTA */}
-            {trending.length === 0 && history.length === 0 && (
+            {history.length === 0 && (
               <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
                 <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl" style={{ background: "rgba(26,26,26,0.06)" }}>
                   🔍
