@@ -1,11 +1,6 @@
 import OpenAI from "openai";
 import { AGENT_SYSTEM_PROMPT } from "@/lib/constants";
 
-const groq = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY!,
-  baseURL: "https://api.groq.com/openai/v1",
-});
-
 interface RequestMessage {
   role: "user" | "assistant";
   content: string;
@@ -13,6 +8,11 @@ interface RequestMessage {
 
 export async function POST(request: Request) {
   try {
+    const groq = new OpenAI({
+      apiKey: process.env.GROQ_API_KEY!,
+      baseURL: "https://api.groq.com/openai/v1",
+    });
+
     const body = await request.json();
     const { messages } = body as { messages: RequestMessage[] };
 
