@@ -115,6 +115,16 @@ export const PROJECTS: Project[] = [
     tags: ["Claude API", "Node.js", "TypeScript", "Next.js"],
     featured: false,
   },
+  {
+    id: "rugpull-detector",
+    title: "Memecoin Rug Pull Detector",
+    description:
+      "Free on-chain security tool for the AyitiCoin crypto community. Paste any token contract address and instantly get: market cap, liquidity, creation date, social links, honeypot detection, ownership status, taxes, and a security score. Also available as a Telegram bot (@ayiticoin_rugcheck_bot) — type /rugcheck directly in chat.",
+    category: "web3",
+    tags: ["Next.js", "DexScreener API", "GoPlus Security", "Telegram Bot"],
+    featured: true,
+    liveUrl: "https://dev-thierry.vercel.app/rugcheck",
+  },
 ];
 
 export const GALLERY_ITEMS: GalleryItem[] = [
