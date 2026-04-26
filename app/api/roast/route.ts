@@ -1,10 +1,5 @@
 import OpenAI from "openai";
 
-const groq = new OpenAI({
-  apiKey: process.env.GROQ_API_KEY!,
-  baseURL: "https://api.groq.com/openai/v1",
-});
-
 const ROAST_SYSTEM_PROMPT = `You are a brutally honest but constructive senior web developer and UX expert who gives savage but genuinely helpful website feedback. Your style is like a tech Twitter roast — funny, specific, cutting, but always with actionable advice.
 
 Analyze the website content and roast it using EXACTLY this format:
@@ -115,6 +110,11 @@ function extractContent(html: string, url: string) {
 
 export async function POST(request: Request) {
   try {
+    const groq = new OpenAI({
+      apiKey: process.env.GROQ_API_KEY!,
+      baseURL: "https://api.groq.com/openai/v1",
+    });
+
     const { url } = await request.json();
 
     if (!url?.trim()) {
