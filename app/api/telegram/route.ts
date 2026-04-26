@@ -142,6 +142,38 @@ export async function POST(request: Request) {
       return Response.json({ ok: true });
     }
 
+    // /trending
+    if (text === "/trending") {
+      const res = await fetch("https://api.dexscreener.com/token-boosts/top/v1", {
+        headers: { Accept: "application/json" },
+      });
+      if (!res.ok) {
+        await sendMessage(chatId, "❌ Trending pa disponib kounye a. Eseye ankò.", { reply_markup: ANALYZE_BUTTON });
+        return Response.json({ ok: true });
+      }
+      const data = await res.json();
+      const items: Array<Record<string, unknown>> = Array.isArray(data) ? data.slice(0, 8) : [];
+      const seen = new Set<string>();
+      const lines = ["🔥 *Top Trending Tokens — DexScreener*", ""];
+      let i = 1;
+      for (const t of items) {
+        const addr = String(t.tokenAddress ?? "");
+        if (seen.has(addr)) continue;
+        seen.add(addr);
+        const chain = String(t.chainId ?? "").toUpperCase();
+        const name = t.description ? String(t.description).slice(0, 30) : "Unknown";
+        lines.push(`${i}. *${name}* — \`${chain}\``);
+        lines.push(`   \`${addr.slice(0, 20)}...\``);
+        lines.push(`   /rugcheck ${addr}`);
+        lines.push("");
+        i++;
+      }
+      lines.push("━━━━━━━━━━━━━━━━━━");
+      lines.push(`🇭🇹 [Komunote @ayiticoin](${COMMUNITY_URL})`);
+      await sendMessage(chatId, lines.join("\n"), { reply_markup: ANALYZE_BUTTON });
+      return Response.json({ ok: true });
+    }
+
     // /help
     if (text === "/help") {
       await sendMessage(

@@ -1,8 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+
+type TrendingToken = {
+  address: string;
+  chain: string;
+  name: string | null;
+  icon: string | null;
+  url: string | null;
+};
+
+type HistoryItem = {
+  address: string;
+  name: string;
+  symbol: string;
+  chain: string;
+  verdict: "SAFE" | "RISKY" | "SCAM";
+  score: number;
+  analyzedAt: string;
+};
+
+const CHAIN_LABELS: Record<string, string> = {
+  ethereum: "ETH",
+  bsc: "BSC",
+  polygon: "POL",
+  base: "BASE",
+  arbitrum: "ARB",
+  avalanche: "AVAX",
+  solana: "SOL",
+  optimism: "OP",
+};
 
 type RugResult = {
   found: boolean;
@@ -42,13 +71,26 @@ type RugResult = {
   };
 };
 
+const HISTORY_KEY = "rugcheck_history";
+
+function getHistory(): HistoryItem[] {
+  if (typeof window === "undefined") return [];
+  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) ?? "[]"); } catch { return []; }
+}
+
+function saveHistory(item: HistoryItem) {
+  const prev = getHistory().filter((h) => h.address !== item.address);
+  const next = [item, ...prev].slice(0, 10);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(next));
+}
+
 const VERDICT_STYLE = {
   SAFE:  { bg: "#dcfce7", text: "#16a34a", border: "#bbf7d0" },
   RISKY: { bg: "#fef9c3", text: "#ca8a04", border: "#fde047" },
   SCAM:  { bg: "#fee2e2", text: "#dc2626", border: "#fca5a5" },
 };
 
-const CHAIN_LABELS: Record<string, string> = {
+const CHAIN_LABELS_FULL: Record<string, string> = {
   ethereum: "Ethereum",
   bsc: "BSC",
   polygon: "Polygon",
@@ -85,6 +127,16 @@ export default function RugCheckPage() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RugResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [trending, setTrending] = useState<TrendingToken[]>([]);
+  const [history, setHistory] = useState<HistoryItem[]>([]);
+
+  useEffect(() => {
+    setHistory(getHistory());
+    fetch("/api/trending")
+      .then((r) => r.json())
+      .then((d) => setTrending(d.tokens ?? []))
+      .catch(() => {});
+  }, []);
 
   const analyze = async () => {
     if (loading || !address.trim()) return;
@@ -103,6 +155,19 @@ export default function RugCheckPage() {
         setError(data.error ?? "Analysis failed. Please try again.");
       } else {
         setResult(data);
+        if (data.found) {
+          const item: HistoryItem = {
+            address: data.token.address,
+            name: data.token.name,
+            symbol: data.token.symbol,
+            chain: data.token.chain,
+            verdict: data.security.verdict,
+            score: data.security.score,
+            analyzedAt: new Date().toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }),
+          };
+          saveHistory(item);
+          setHistory(getHistory());
+        }
       }
     } catch {
       setError("Network error. Please try again.");
@@ -262,7 +327,7 @@ export default function RugCheckPage() {
                       ${result.token.symbol}
                     </span>
                     <span className="text-xs font-bold px-2 py-0.5 rounded-lg" style={{ background: "rgba(26,26,26,0.07)", color: "#555555" }}>
-                      {CHAIN_LABELS[result.token.chain] ?? result.token.chain}
+                      {CHAIN_LABELS_FULL[result.token.chain] ?? result.token.chain}
                     </span>
                   </div>
                   <p className="font-mono text-[11px] text-[#aaaaaa] break-all">{result.token.address}</p>
@@ -447,29 +512,111 @@ export default function RugCheckPage() {
           )}
         </AnimatePresence>
 
-        {/* Empty state */}
-        {!result && !loading && !error && (
+        {/* Trending + History (visible when no result) */}
+        {!result && !loading && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="flex flex-col items-center justify-center py-20 gap-4 text-center"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="flex flex-col gap-8"
           >
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl" style={{ background: "rgba(26,26,26,0.06)" }}>
-              🔍
-            </div>
-            <p className="text-sm text-[#aaaaaa] max-w-xs">
-              Enter a token contract address above to check for rug pull risks, honeypots, and on-chain data.
-            </p>
+
+            {/* Trending Tokens */}
+            {trending.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-base">🔥</span>
+                  <p className="text-[10px] font-black tracking-[0.25em] uppercase text-[#888888]">Trending Now</p>
+                  <span className="text-[10px] text-[#aaaaaa]">— tokens les plus boostés du moment</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  {trending.map((t) => (
+                    <button
+                      key={t.address}
+                      onClick={() => { setAddress(String(t.address)); }}
+                      className="flex flex-col items-start gap-2 p-4 rounded-2xl text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
+                      style={{ background: "#ffffff", border: "1px solid rgba(26,26,26,0.1)" }}
+                    >
+                      <div className="flex items-center gap-2 w-full">
+                        {t.icon ? (
+                          <img src={t.icon} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                        ) : (
+                          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-sm" style={{ background: "rgba(26,26,26,0.06)" }}>🪙</div>
+                        )}
+                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md shrink-0" style={{ background: "rgba(26,26,26,0.06)", color: "#888888" }}>
+                          {CHAIN_LABELS[t.chain] ?? t.chain.toUpperCase()}
+                        </span>
+                      </div>
+                      {t.name && (
+                        <p className="text-xs font-semibold text-[#1a1a1a] leading-tight line-clamp-2">{t.name}</p>
+                      )}
+                      <p className="text-[10px] font-mono text-[#aaaaaa] truncate w-full">
+                        {String(t.address).slice(0, 10)}...
+                      </p>
+                      <span className="text-[10px] font-bold text-[#1a1a1a] mt-auto">Analyze →</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Recent History */}
+            {history.length > 0 && (
+              <div>
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-base">🕐</span>
+                  <p className="text-[10px] font-black tracking-[0.25em] uppercase text-[#888888]">Analyses récentes</p>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {history.slice(0, 5).map((h) => {
+                    const vs = VERDICT_STYLE[h.verdict];
+                    return (
+                      <button
+                        key={h.address}
+                        onClick={() => setAddress(h.address)}
+                        className="flex items-center justify-between px-4 py-3 rounded-2xl transition-all hover:scale-[1.01] text-left"
+                        style={{ background: "#ffffff", border: "1px solid rgba(26,26,26,0.08)" }}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <p className="text-sm font-bold text-[#1a1a1a]">{h.name} <span className="text-[#aaaaaa] font-normal">${h.symbol}</span></p>
+                            <p className="text-[11px] text-[#aaaaaa]">{CHAIN_LABELS[h.chain] ?? h.chain.toUpperCase()} · {h.analyzedAt}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0">
+                          <span className="text-sm font-black" style={{ color: vs.text }}>{h.score}/100</span>
+                          <span className="text-[10px] font-black px-2 py-0.5 rounded-lg" style={{ background: vs.bg, color: vs.text }}>{h.verdict}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Empty state with community CTA */}
+            {trending.length === 0 && history.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-16 gap-4 text-center">
+                <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl" style={{ background: "rgba(26,26,26,0.06)" }}>
+                  🔍
+                </div>
+                <p className="text-sm text-[#aaaaaa] max-w-xs">
+                  Enter a token contract address above to check for rug pull risks, honeypots, and on-chain data.
+                </p>
+              </div>
+            )}
+
+            {/* Community CTA */}
             <a
               href="https://t.me/ayiticoin"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs font-semibold px-4 py-2 rounded-xl transition-colors hover:opacity-80"
-              style={{ background: "rgba(34,158,217,0.1)", color: "#229ED9" }}
+              className="flex items-center justify-center gap-2 py-4 rounded-2xl text-sm font-semibold transition-all hover:opacity-85"
+              style={{ background: "rgba(34,158,217,0.08)", color: "#229ED9", border: "1px solid rgba(34,158,217,0.2)" }}
             >
-              🇭🇹 Rejoins la communauté @ayiticoin
+              🇭🇹 Rejoins la communauté crypto haïtienne — @ayiticoin
             </a>
+
           </motion.div>
         )}
 
