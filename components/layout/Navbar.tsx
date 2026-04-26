@@ -24,6 +24,12 @@ const TOOLS = [
     label: "Contract Audit",
     desc: "Analyse de sécurité Solidity — gratuit",
   },
+  {
+    href: "/rugcheck",
+    icon: "🔍",
+    label: "Rug Pull Detector",
+    desc: "Scan memecoin — market cap, liquidité, sécurité",
+  },
 ];
 
 export function Navbar() {
