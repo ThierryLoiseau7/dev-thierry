@@ -232,10 +232,20 @@ export default function RugCheckPage() {
             <br />
             <span className="text-[#888888]">Pull Detector</span>
           </h1>
-          <p className="text-sm text-[#888888] max-w-lg">
+          <p className="text-sm text-[#888888] max-w-lg mb-5">
             Paste any token contract address — get instant on-chain data: market cap, liquidity,
             socials, and a full security scan. Supports <strong className="text-[#1a1a1a]">ETH · BSC · Base · Solana · Polygon</strong> and more.
           </p>
+          {/* Disclaimer banner */}
+          <div
+            className="inline-flex items-start gap-2 px-4 py-3 rounded-xl max-w-lg"
+            style={{ background: "rgba(202,138,4,0.08)", border: "1px solid rgba(202,138,4,0.2)" }}
+          >
+            <span className="text-sm shrink-0">⚠️</span>
+            <p className="text-xs text-[#92400e] leading-relaxed">
+              <strong>Sa se pa konsèy finansye.</strong> Nou kreye zouti sa pou ede kominote ayisyen an konprann risk yo anvan yo envesti. Toujou fè pwòp rechèch ou — <strong>DYOR</strong>.
+            </p>
+          </div>
         </motion.div>
 
         {/* Input */}
@@ -493,12 +503,21 @@ export default function RugCheckPage() {
                 </a>
               </div>
 
-              {/* Disclaimer + reset */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-2">
+              {/* Disclaimer */}
+              <div
+                className="flex items-start gap-2 px-4 py-3 rounded-xl"
+                style={{ background: "rgba(202,138,4,0.08)", border: "1px solid rgba(202,138,4,0.2)" }}
+              >
+                <span className="text-sm shrink-0">⚠️</span>
+                <p className="text-xs text-[#92400e] leading-relaxed">
+                  <strong>Sa se pa konsèy finansye.</strong> Nou kreye zouti sa pou ede kominote ayisyen an konprann risk yo. Toujou fè pwòp rechèch ou anvan ou envesti — <strong>DYOR</strong>.
+                </p>
+              </div>
+
+              {/* Data sources + reset */}
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-1">
                 <p className="text-[11px] text-[#aaaaaa]">
                   Data: <strong className="text-[#888888]">DexScreener</strong> + <strong className="text-[#888888]">GoPlus Security</strong> · By <strong className="text-[#1a1a1a]">Dev Thierry</strong>
-                  <br />
-                  <span className="text-[10px]">Not financial advice. Always DYOR.</span>
                 </p>
                 <button
                   onClick={() => { setResult(null); setAddress(""); }}
@@ -523,35 +542,35 @@ export default function RugCheckPage() {
 
             {/* Trending Tokens */}
             {trending.length > 0 && (
-              <div>
-                <div className="flex items-center gap-2 mb-4">
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-4">
                   <span className="text-base">🔥</span>
                   <p className="text-[10px] font-black tracking-[0.25em] uppercase text-[#888888]">Trending Now</p>
-                  <span className="text-[10px] text-[#aaaaaa]">— tokens les plus boostés du moment</span>
+                  <span className="text-[10px] text-[#aaaaaa]">— top tokens kounye a</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {trending.map((t) => (
                     <button
                       key={t.address}
                       onClick={() => { setAddress(String(t.address)); }}
-                      className="flex flex-col items-start gap-2 p-4 rounded-2xl text-left transition-all hover:scale-[1.02] active:scale-[0.98]"
+                      className="flex flex-col items-start gap-2 p-3 rounded-2xl text-left transition-all hover:scale-[1.02] active:scale-[0.98] overflow-hidden min-w-0"
                       style={{ background: "#ffffff", border: "1px solid rgba(26,26,26,0.1)" }}
                     >
-                      <div className="flex items-center gap-2 w-full">
+                      <div className="flex items-center gap-1.5 w-full min-w-0">
                         {t.icon ? (
-                          <img src={t.icon} alt="" className="w-7 h-7 rounded-full object-cover shrink-0" />
+                          <img src={t.icon} alt="" className="w-6 h-6 rounded-full object-cover shrink-0" />
                         ) : (
-                          <div className="w-7 h-7 rounded-full flex items-center justify-center shrink-0 text-sm" style={{ background: "rgba(26,26,26,0.06)" }}>🪙</div>
+                          <div className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-xs" style={{ background: "rgba(26,26,26,0.06)" }}>🪙</div>
                         )}
-                        <span className="text-[10px] font-black px-1.5 py-0.5 rounded-md shrink-0" style={{ background: "rgba(26,26,26,0.06)", color: "#888888" }}>
-                          {CHAIN_LABELS[t.chain] ?? t.chain.toUpperCase()}
+                        <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md shrink-0" style={{ background: "rgba(26,26,26,0.06)", color: "#888888" }}>
+                          {CHAIN_LABELS[t.chain] ?? t.chain.slice(0, 4).toUpperCase()}
                         </span>
                       </div>
                       {t.name && (
-                        <p className="text-xs font-semibold text-[#1a1a1a] leading-tight line-clamp-2">{t.name}</p>
+                        <p className="text-[11px] font-semibold text-[#1a1a1a] leading-tight line-clamp-2 w-full break-words">{t.name}</p>
                       )}
-                      <p className="text-[10px] font-mono text-[#aaaaaa] truncate w-full">
-                        {String(t.address).slice(0, 10)}...
+                      <p className="text-[9px] font-mono text-[#aaaaaa] w-full overflow-hidden" style={{ textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {String(t.address).slice(0, 8)}...
                       </p>
                       <span className="text-[10px] font-bold text-[#1a1a1a] mt-auto">Analyze →</span>
                     </button>
