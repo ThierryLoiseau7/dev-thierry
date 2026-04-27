@@ -5,11 +5,6 @@ import { motion } from "framer-motion";
 import { FORMATIONS } from "@/lib/constants";
 import { useLang } from "@/lib/i18n/context";
 
-const CATEGORY_COUNTS: Record<string, number> = {
-  ia: 0,
-  webdev: 0,
-  web3: 0,
-};
 
 const CHECK_ICON = (
   <svg className="w-3 h-3" fill="none" stroke="#00d4ff" viewBox="0 0 24 24">
@@ -27,13 +22,6 @@ const ARROW_ICON = (
 export function Formations() {
   const { t } = useLang();
   const f = t.formations;
-  const counts = FORMATIONS.reduce(
-    (acc, f) => {
-      if (f.category) acc[f.category] = (acc[f.category] ?? 0) + 1;
-      return acc;
-    },
-    { ...CATEGORY_COUNTS }
-  );
 
 
   return (
