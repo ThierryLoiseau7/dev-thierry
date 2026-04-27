@@ -36,6 +36,21 @@ export interface Formation {
   icon: string;
   level: string;
   topics: string[];
+  category?: "ia" | "webdev" | "web3";
+  modules?: number;
+  duration?: string;
+  isNew?: boolean;
+}
+
+export interface MembershipPlan {
+  id: "gratuit" | "pass" | "pro";
+  name: string;
+  priceMonthly: number | null;
+  billedAnnually: number | null;
+  tagline: string;
+  highlight: boolean;
+  features: Array<{ text: string; included: boolean }>;
+  cta: string;
 }
 
 export interface GalleryItem {

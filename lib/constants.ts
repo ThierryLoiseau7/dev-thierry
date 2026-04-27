@@ -1,4 +1,4 @@
-import type { Project, Skill, TimelineEntry, GalleryItem, Formation } from "./types";
+import type { Project, Skill, TimelineEntry, GalleryItem, Formation, MembershipPlan } from "./types";
 
 export const TIMELINE: TimelineEntry[] = [
   {
@@ -128,6 +128,7 @@ export const PROJECTS: Project[] = [
 ];
 
 export const FORMATIONS: Formation[] = [
+  // IA & Outils
   {
     id: "ai-website",
     title: "AI pour Website",
@@ -136,6 +137,9 @@ export const FORMATIONS: Formation[] = [
     icon: "🌐",
     level: "Debutant → Avance",
     topics: ["Generer du code avec IA", "ChatGPT + Cursor", "Next.js + Vercel", "SEO automatise"],
+    category: "ia",
+    modules: 10,
+    duration: "6h",
   },
   {
     id: "ai-design",
@@ -145,6 +149,9 @@ export const FORMATIONS: Formation[] = [
     icon: "🎨",
     level: "Debutant → Intermediaire",
     topics: ["Midjourney & DALL-E", "Adobe Firefly", "Canva AI", "Prompts visuels"],
+    category: "ia",
+    modules: 8,
+    duration: "4h",
   },
   {
     id: "ai-video",
@@ -154,6 +161,9 @@ export const FORMATIONS: Formation[] = [
     icon: "🎬",
     level: "Debutant → Intermediaire",
     topics: ["CapCut AI", "Runway ML", "Sous-titres auto", "Voix-off IA"],
+    category: "ia",
+    modules: 7,
+    duration: "4h",
   },
   {
     id: "ai-telegram",
@@ -163,6 +173,9 @@ export const FORMATIONS: Formation[] = [
     icon: "🤖",
     level: "Intermediaire",
     topics: ["Python + Telegram API", "Integrer Claude/GPT", "Commandes & menus", "Deploiement serveur"],
+    category: "ia",
+    modules: 9,
+    duration: "5h",
   },
   {
     id: "ai-emploi",
@@ -172,6 +185,121 @@ export const FORMATIONS: Formation[] = [
     icon: "💼",
     level: "Tous niveaux",
     topics: ["CV optimise par IA", "Lettres de motivation", "Simulation d'entretien", "LinkedIn & reseaux"],
+    category: "ia",
+    modules: 6,
+    duration: "3h",
+  },
+  // Web Dev
+  {
+    id: "webdev-nextjs",
+    title: "Next.js 14 — De Zero a Production",
+    description:
+      "Construis des applications web modernes et performantes avec Next.js 14. App Router, Server Components, API routes, et deploiement Vercel de A a Z.",
+    icon: "⚡",
+    level: "Debutant → Avance",
+    topics: ["App Router", "Server Components", "API Routes", "Vercel Deploy"],
+    category: "webdev",
+    modules: 12,
+    duration: "8h",
+    isNew: true,
+  },
+  {
+    id: "webdev-typescript",
+    title: "TypeScript & Tailwind Moderne",
+    description:
+      "Maitrise TypeScript strict et Tailwind CSS pour ecrire du code propre, scalable et elegant. Le duo incontournable du developpement web moderne.",
+    icon: "🔷",
+    level: "Intermediaire",
+    topics: ["TypeScript strict", "Types avances", "Tailwind 4", "Design System"],
+    category: "webdev",
+    modules: 8,
+    duration: "5h",
+  },
+  // Web3
+  {
+    id: "web3-solidity",
+    title: "Solidity pour Developpeurs Web",
+    description:
+      "Apprends a ecrire des smart contracts Ethereum securises. De ERC-20 aux DApps completes, avec tests Hardhat et deploiement sur mainnet.",
+    icon: "⛓️",
+    level: "Intermediaire",
+    topics: ["Solidity", "ERC-20/721", "Hardhat", "Mainnet Deploy"],
+    category: "web3",
+    modules: 10,
+    duration: "7h",
+    isNew: true,
+  },
+  {
+    id: "web3-dapp",
+    title: "Construire une DApp complete",
+    description:
+      "De la connexion wallet MetaMask jusqu'au frontend React. Construis une DApp fonctionnelle sur Ethereum avec Ethers.js et Wagmi.",
+    icon: "🔗",
+    level: "Intermediaire → Avance",
+    topics: ["Ethers.js", "Wagmi", "MetaMask", "React + Web3"],
+    category: "web3",
+    modules: 9,
+    duration: "6h",
+  },
+];
+
+export const MEMBERSHIP_PLANS: MembershipPlan[] = [
+  {
+    id: "gratuit",
+    name: "GRATUIT",
+    priceMonthly: 0,
+    billedAnnually: 0,
+    tagline: "Pour decouvrir et tester",
+    highlight: false,
+    features: [
+      { text: "3 formations d'introduction", included: true },
+      { text: "Acces au blog & newsletter", included: true },
+      { text: "1 live replay par mois", included: true },
+      { text: "Toutes les formations", included: false },
+      { text: "Sessions live coding", included: false },
+      { text: "Discord communaute", included: false },
+      { text: "Ressources telechargeable", included: false },
+      { text: "Code reviews privees", included: false },
+    ],
+    cta: "Commencer gratuitement",
+  },
+  {
+    id: "pass",
+    name: "DEV PASS",
+    priceMonthly: 20,
+    billedAnnually: 240,
+    tagline: "L'acces illimite a tout le contenu",
+    highlight: true,
+    features: [
+      { text: "Toutes les formations incluses", included: true },
+      { text: "Sessions live coding mensuelles", included: true },
+      { text: "Discord communaute complete", included: true },
+      { text: "Ressources telechargeable", included: true },
+      { text: "Nouvelles formations chaque mois", included: true },
+      { text: "Certificat de completion", included: true },
+      { text: "10% de rabais workshops 1-on-1", included: true },
+      { text: "Code reviews privees", included: false },
+    ],
+    cta: "Obtenir le DEV PASS",
+  },
+  {
+    id: "pro",
+    name: "DEV PASS PRO",
+    priceMonthly: 49,
+    billedAnnually: 588,
+    tagline: "Pour aller plus vite, plus loin",
+    highlight: false,
+    features: [
+      { text: "Tout du DEV PASS inclus", included: true },
+      { text: "1 code review privee/mois (30 min)", included: true },
+      { text: "Early access nouvelles formations", included: true },
+      { text: "Canal Discord PRO prive", included: true },
+      { text: "25% de rabais workshops 1-on-1", included: true },
+      { text: "Roadmap personnalisee", included: true },
+      { text: "Priorite reponses & support", included: true },
+      { text: "Sessions live coding mensuelles", included: true },
+    ],
+    cta: "Obtenir le PRO",
   },
 ];
 
