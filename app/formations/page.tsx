@@ -45,16 +45,22 @@ const CATEGORY_TABS: { id: CategoryId; label: string; icon: string }[] = [
   { id: "web3", label: "Web3", icon: "⛓️" },
 ];
 
+const CATEGORY_LABELS: Record<string, string> = {
+  ia: "IA & Outils",
+  webdev: "Web Dev",
+  web3: "Web3",
+};
+
 const ACCENT_COLORS: Record<string, { from: string; to: string; glow: string }> = {
-  "ai-website":       { from: "#6366f1", to: "#8b5cf6", glow: "rgba(99,102,241,0.12)" },
-  "ai-design":        { from: "#ec4899", to: "#f43f5e", glow: "rgba(236,72,153,0.12)" },
-  "ai-video":         { from: "#f59e0b", to: "#ef4444", glow: "rgba(245,158,11,0.12)" },
-  "ai-telegram":      { from: "#0088cc", to: "#0ea5e9", glow: "rgba(0,136,204,0.12)" },
-  "ai-emploi":        { from: "#10b981", to: "#059669", glow: "rgba(16,185,129,0.12)" },
-  "webdev-nextjs":    { from: "#00d4ff", to: "#0077bb", glow: "rgba(0,212,255,0.12)" },
-  "webdev-typescript":{ from: "#3b82f6", to: "#6366f1", glow: "rgba(59,130,246,0.12)" },
-  "web3-solidity":    { from: "#7c3aed", to: "#4f46e5", glow: "rgba(124,58,237,0.12)" },
-  "web3-dapp":        { from: "#06b6d4", to: "#0891b2", glow: "rgba(6,182,212,0.12)" },
+  "ai-website":        { from: "#6366f1", to: "#8b5cf6", glow: "rgba(99,102,241,0.12)" },
+  "ai-design":         { from: "#ec4899", to: "#f43f5e", glow: "rgba(236,72,153,0.12)" },
+  "ai-video":          { from: "#f59e0b", to: "#ef4444", glow: "rgba(245,158,11,0.12)" },
+  "ai-telegram":       { from: "#0088cc", to: "#0ea5e9", glow: "rgba(0,136,204,0.12)" },
+  "ai-emploi":         { from: "#10b981", to: "#059669", glow: "rgba(16,185,129,0.12)" },
+  "webdev-nextjs":     { from: "#00d4ff", to: "#0077bb", glow: "rgba(0,212,255,0.12)" },
+  "webdev-typescript": { from: "#3b82f6", to: "#6366f1", glow: "rgba(59,130,246,0.12)" },
+  "web3-solidity":     { from: "#7c3aed", to: "#4f46e5", glow: "rgba(124,58,237,0.12)" },
+  "web3-dapp":         { from: "#06b6d4", to: "#0891b2", glow: "rgba(6,182,212,0.12)" },
 };
 
 const TELEGRAM_SVG = (
@@ -69,15 +75,10 @@ const WHATSAPP_SVG = (
   </svg>
 );
 
-const ARROW_SVG = (
-  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-  </svg>
-);
-
 export default function FormationsPage() {
   const [activeTab, setActiveTab] = useState<CategoryId>("tous");
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [hoveredCard, setHoveredCard] = useState<string | null>(null);
 
   const filtered =
     activeTab === "tous"
@@ -92,7 +93,6 @@ export default function FormationsPage() {
           HERO
       ═══════════════════════════════════════════════════ */}
       <section className="pt-32 pb-20 relative overflow-hidden">
-        {/* Background blobs */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <div
             className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] rounded-full blur-[120px] opacity-20"
@@ -153,7 +153,6 @@ export default function FormationsPage() {
             annuellement.
           </motion.p>
 
-          {/* Stats */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -187,9 +186,7 @@ export default function FormationsPage() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <p className="text-xs font-bold tracking-[0.28em] uppercase text-[#909090] mb-3">
-              Tarifs
-            </p>
+            <p className="text-xs font-bold tracking-[0.28em] uppercase text-[#909090] mb-3">Tarifs</p>
             <h2
               className="font-heading font-bold text-[#1a1a1a] tracking-tight"
               style={{ fontSize: "clamp(1.75rem, 3vw, 2.25rem)" }}
@@ -220,213 +217,84 @@ export default function FormationsPage() {
                         }
                   }
                 >
-                  {/* Glow for highlighted card */}
                   {plan.highlight && (
                     <>
-                      <div
-                        className="absolute -top-12 -right-12 w-52 h-52 rounded-full blur-3xl opacity-25 pointer-events-none"
-                        style={{ background: "radial-gradient(circle, #00d4ff, transparent)" }}
-                      />
-                      <div
-                        className="absolute -bottom-12 -left-12 w-44 h-44 rounded-full blur-3xl opacity-18 pointer-events-none"
-                        style={{ background: "radial-gradient(circle, #7c3aed, transparent)" }}
-                      />
+                      <div className="absolute -top-12 -right-12 w-52 h-52 rounded-full blur-3xl opacity-25 pointer-events-none" style={{ background: "radial-gradient(circle, #00d4ff, transparent)" }} />
+                      <div className="absolute -bottom-12 -left-12 w-44 h-44 rounded-full blur-3xl opacity-18 pointer-events-none" style={{ background: "radial-gradient(circle, #7c3aed, transparent)" }} />
                     </>
                   )}
-
                   <div className="relative z-10 flex flex-col h-full">
-                    {/* Plan header */}
                     <div className="flex items-center justify-between mb-5">
-                      <span
-                        className={`text-[10px] font-black tracking-[0.2em] uppercase ${
-                          plan.highlight ? "text-[#00d4ff]" : "text-[#888]"
-                        }`}
-                      >
+                      <span className={`text-[10px] font-black tracking-[0.2em] uppercase ${plan.highlight ? "text-[#00d4ff]" : "text-[#888]"}`}>
                         {plan.name}
                       </span>
                       {plan.highlight && (
-                        <span
-                          className="text-[9px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full"
-                          style={{
-                            background: "rgba(0,212,255,0.1)",
-                            color: "#00c4ef",
-                            border: "1px solid rgba(0,212,255,0.22)",
-                          }}
-                        >
+                        <span className="text-[9px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full" style={{ background: "rgba(0,212,255,0.1)", color: "#00c4ef", border: "1px solid rgba(0,212,255,0.22)" }}>
                           Populaire
                         </span>
                       )}
                     </div>
-
-                    {/* Price */}
                     <div className="mb-1">
                       {plan.priceMonthly === 0 ? (
-                        <span
-                          className={`text-4xl font-black ${
-                            plan.highlight ? "text-white" : "text-[#1a1a1a]"
-                          }`}
-                        >
-                          Gratuit
-                        </span>
+                        <span className={`text-4xl font-black ${plan.highlight ? "text-white" : "text-[#1a1a1a]"}`}>Gratuit</span>
                       ) : (
                         <>
-                          <span
-                            className={`text-4xl font-black ${
-                              plan.highlight ? "text-white" : "text-[#1a1a1a]"
-                            }`}
-                          >
-                            ${plan.priceMonthly}
-                          </span>
-                          <span
-                            className={`text-base ml-1 ${
-                              plan.highlight ? "text-[rgba(255,255,255,0.4)]" : "text-[#aaa]"
-                            }`}
-                          >
-                            /mois
-                          </span>
+                          <span className={`text-4xl font-black ${plan.highlight ? "text-white" : "text-[#1a1a1a]"}`}>${plan.priceMonthly}</span>
+                          <span className={`text-base ml-1 ${plan.highlight ? "text-[rgba(255,255,255,0.4)]" : "text-[#aaa]"}`}>/mois</span>
                         </>
                       )}
                     </div>
-
-                    <p
-                      className={`text-xs mb-1 ${
-                        plan.highlight ? "text-[rgba(255,255,255,0.35)]" : "text-[#aaa]"
-                      }`}
-                    >
-                      {plan.billedAnnually
-                        ? `Facture $${plan.billedAnnually}/an`
-                        : "Sans engagement"}
+                    <p className={`text-xs mb-1 ${plan.highlight ? "text-[rgba(255,255,255,0.35)]" : "text-[#aaa]"}`}>
+                      {plan.billedAnnually ? `Facture $${plan.billedAnnually}/an` : "Sans engagement"}
                     </p>
-                    <p
-                      className={`text-sm mb-6 ${
-                        plan.highlight ? "text-[rgba(255,255,255,0.55)]" : "text-[#666]"
-                      }`}
-                    >
+                    <p className={`text-sm mb-6 ${plan.highlight ? "text-[rgba(255,255,255,0.55)]" : "text-[#666]"}`}>
                       {plan.tagline}
                     </p>
-
-                    {/* Divider */}
-                    <div
-                      className={`h-px mb-5 ${
-                        plan.highlight
-                          ? "bg-[rgba(255,255,255,0.07)]"
-                          : "bg-[rgba(0,0,0,0.06)]"
-                      }`}
-                    />
-
-                    {/* Features */}
+                    <div className={`h-px mb-5 ${plan.highlight ? "bg-[rgba(255,255,255,0.07)]" : "bg-[rgba(0,0,0,0.06)]"}`} />
                     <ul className="space-y-2.5 mb-7 flex-1">
                       {plan.features.map((f) => (
                         <li key={f.text} className="flex items-center gap-2.5">
                           <div
                             className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
-                            style={
-                              f.included
-                                ? plan.highlight
-                                  ? {
-                                      background: "rgba(0,212,255,0.12)",
-                                      border: "1px solid rgba(0,212,255,0.25)",
-                                    }
-                                  : {
-                                      background: "rgba(26,26,26,0.07)",
-                                      border: "1px solid rgba(26,26,26,0.12)",
-                                    }
-                                : { background: "transparent" }
-                            }
+                            style={f.included
+                              ? plan.highlight
+                                ? { background: "rgba(0,212,255,0.12)", border: "1px solid rgba(0,212,255,0.25)" }
+                                : { background: "rgba(26,26,26,0.07)", border: "1px solid rgba(26,26,26,0.12)" }
+                              : { background: "transparent" }}
                           >
                             {f.included ? (
-                              <svg
-                                className="w-2.5 h-2.5"
-                                fill="none"
-                                stroke={plan.highlight ? "#00d4ff" : "#1a1a1a"}
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={3}
-                                  d="M5 13l4 4L19 7"
-                                />
+                              <svg className="w-2.5 h-2.5" fill="none" stroke={plan.highlight ? "#00d4ff" : "#1a1a1a"} viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                               </svg>
                             ) : (
-                              <svg
-                                className="w-2.5 h-2.5"
-                                fill="none"
-                                stroke="#ccc"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M6 18L18 6M6 6l12 12"
-                                />
+                              <svg className="w-2.5 h-2.5" fill="none" stroke="#ccc" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             )}
                           </div>
-                          <span
-                            className={`text-sm ${
-                              f.included
-                                ? plan.highlight
-                                  ? "text-[rgba(255,255,255,0.78)]"
-                                  : "text-[#444]"
-                                : "text-[#bbb]"
-                            }`}
-                          >
+                          <span className={`text-sm ${f.included ? (plan.highlight ? "text-[rgba(255,255,255,0.78)]" : "text-[#444]") : "text-[#bbb]"}`}>
                             {f.text}
                           </span>
                         </li>
                       ))}
                     </ul>
-
-                    {/* CTA button */}
                     {plan.id === "gratuit" ? (
-                      <a
-                        href="#catalog"
-                        className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:border-[rgba(0,0,0,0.28)] hover:text-[#1a1a1a]"
-                        style={{
-                          border: "1px solid rgba(0,0,0,0.14)",
-                          color: "#666",
-                        }}
-                      >
+                      <a href="#catalog" className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200" style={{ border: "1px solid rgba(0,0,0,0.14)", color: "#666" }}>
                         {plan.cta}
                       </a>
                     ) : plan.highlight ? (
-                      <a
-                        href={TELEGRAM_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg"
-                        style={{ background: "linear-gradient(135deg, #00d4ff, #7c3aed)" }}
-                      >
+                      <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:opacity-90" style={{ background: "linear-gradient(135deg, #00d4ff, #7c3aed)" }}>
                         {plan.cta}
-                        {ARROW_SVG}
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                       </a>
                     ) : (
-                      <a
-                        href={TELEGRAM_URL}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-80"
-                        style={{
-                          background: "rgba(124,58,237,0.07)",
-                          color: "#7c3aed",
-                          border: "1px solid rgba(124,58,237,0.18)",
-                        }}
-                      >
+                      <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-80" style={{ background: "rgba(124,58,237,0.07)", color: "#7c3aed", border: "1px solid rgba(124,58,237,0.18)" }}>
                         {plan.cta}
-                        {ARROW_SVG}
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
                       </a>
                     )}
-
                     {plan.id !== "gratuit" && (
-                      <p
-                        className={`text-center text-[10px] mt-3 ${
-                          plan.highlight
-                            ? "text-[rgba(255,255,255,0.25)]"
-                            : "text-[#bbb]"
-                        }`}
-                      >
+                      <p className={`text-center text-[10px] mt-3 ${plan.highlight ? "text-[rgba(255,255,255,0.25)]" : "text-[#bbb]"}`}>
                         Paiement par contact direct · reponse &lt;24h
                       </p>
                     )}
@@ -436,7 +304,6 @@ export default function FormationsPage() {
             ))}
           </div>
 
-          {/* Payment methods note */}
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -460,9 +327,7 @@ export default function FormationsPage() {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <p className="text-xs font-bold tracking-[0.28em] uppercase text-[#909090] mb-3">
-              Catalogue
-            </p>
+            <p className="text-xs font-bold tracking-[0.28em] uppercase text-[#909090] mb-3">Catalogue</p>
             <h2
               className="font-heading font-bold text-[#1a1a1a] tracking-tight"
               style={{ fontSize: "clamp(1.75rem, 3vw, 2.25rem)" }}
@@ -474,10 +339,7 @@ export default function FormationsPage() {
           {/* Category tabs */}
           <div className="flex items-center justify-center flex-wrap gap-2 mb-10">
             {CATEGORY_TABS.map((tab) => {
-              const count =
-                tab.id === "tous"
-                  ? FORMATIONS.length
-                  : FORMATIONS.filter((f) => f.category === tab.id).length;
+              const count = tab.id === "tous" ? FORMATIONS.length : FORMATIONS.filter((f) => f.category === tab.id).length;
               const isActive = activeTab === tab.id;
               return (
                 <button
@@ -487,22 +349,14 @@ export default function FormationsPage() {
                   style={
                     isActive
                       ? { background: "#1a1a1a", color: "white", boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }
-                      : {
-                          background: "white",
-                          color: "#555",
-                          border: "1px solid rgba(0,0,0,0.08)",
-                        }
+                      : { background: "white", color: "#555", border: "1px solid rgba(0,0,0,0.08)" }
                   }
                 >
                   <span>{tab.icon}</span>
                   <span>{tab.label}</span>
                   <span
                     className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                    style={
-                      isActive
-                        ? { background: "rgba(255,255,255,0.15)", color: "white" }
-                        : { background: "#f0f0ec", color: "#888" }
-                    }
+                    style={isActive ? { background: "rgba(255,255,255,0.15)", color: "white" } : { background: "#f0f0ec", color: "#888" }}
                   >
                     {count}
                   </span>
@@ -511,113 +365,230 @@ export default function FormationsPage() {
             })}
           </div>
 
-          {/* Grid */}
-          <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {/* ── FORMATION CARDS GRID ── */}
+          <motion.div layout className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             <AnimatePresence mode="popLayout">
               {filtered.map((formation, i) => {
-                const accent =
-                  ACCENT_COLORS[formation.id] ?? ACCENT_COLORS["ai-website"];
+                const accent = ACCENT_COLORS[formation.id] ?? ACCENT_COLORS["ai-website"];
+                const catLabel = CATEGORY_LABELS[formation.category ?? "ia"] ?? "Formation";
+                const isHovered = hoveredCard === formation.id;
+
                 return (
                   <motion.div
                     key={formation.id}
                     layout
-                    initial={{ opacity: 0, scale: 0.96, y: 12 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.96 }}
-                    transition={{ duration: 0.28, delay: i * 0.04 }}
-                    whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                    initial={{ opacity: 0, y: 20, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.3, delay: i * 0.05 }}
+                    whileHover={{ y: -10, transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] } }}
+                    onHoverStart={() => setHoveredCard(formation.id)}
+                    onHoverEnd={() => setHoveredCard(null)}
+                    className="flex flex-col"
                   >
-                    <div className="bg-white rounded-3xl overflow-hidden h-full shadow-[0_2px_16px_rgba(0,0,0,0.05)] hover:shadow-[0_12px_40px_rgba(0,0,0,0.1)] transition-shadow duration-300">
-                      {/* Gradient top bar */}
+                    <div
+                      className="relative bg-white rounded-3xl overflow-hidden flex flex-col h-full"
+                      style={{
+                        boxShadow: isHovered
+                          ? `0 24px 60px rgba(0,0,0,0.13), 0 0 0 1.5px ${accent.from}50`
+                          : "0 2px 20px rgba(0,0,0,0.06), 0 0 0 1px rgba(0,0,0,0.05)",
+                        transition: "box-shadow 0.3s ease",
+                      }}
+                    >
+                      {/* ── GRADIENT HEADER ── */}
                       <div
-                        className="h-1 w-full"
+                        className="relative h-40 flex items-center justify-center overflow-hidden shrink-0"
                         style={{
-                          background: `linear-gradient(90deg, ${accent.from}, ${accent.to})`,
+                          background: `linear-gradient(135deg, ${accent.from}, ${accent.to})`,
                         }}
-                      />
+                      >
+                        {/* Dot grid pattern */}
+                        <div
+                          className="absolute inset-0 opacity-[0.07]"
+                          style={{
+                            backgroundImage: "radial-gradient(circle, rgba(255,255,255,1) 1px, transparent 1px)",
+                            backgroundSize: "18px 18px",
+                          }}
+                        />
+                        {/* Light orbs */}
+                        <div
+                          className="absolute inset-0 opacity-40 pointer-events-none"
+                          style={{
+                            backgroundImage: `radial-gradient(circle at 15% 80%, rgba(255,255,255,0.5) 0%, transparent 45%), radial-gradient(circle at 85% 15%, rgba(255,255,255,0.3) 0%, transparent 45%)`,
+                          }}
+                        />
+                        {/* Hover darken overlay */}
+                        <div
+                          className="absolute inset-0 bg-black pointer-events-none"
+                          style={{
+                            opacity: isHovered ? 0.08 : 0,
+                            transition: "opacity 0.3s ease",
+                          }}
+                        />
 
-                      <div className="p-6 flex flex-col gap-4">
-                        {/* Icon + badges */}
-                        <div className="flex items-start justify-between">
-                          <div
-                            className="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shrink-0"
+                        {/* Top badges row */}
+                        <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between z-10">
+                          <span
+                            className="text-[10px] font-black tracking-[0.15em] uppercase px-2.5 py-1 rounded-full"
                             style={{
-                              background: `linear-gradient(135deg, ${accent.from}18, ${accent.to}28)`,
+                              background: "rgba(255,255,255,0.18)",
+                              backdropFilter: "blur(8px)",
+                              color: "rgba(255,255,255,0.92)",
+                              border: "1px solid rgba(255,255,255,0.25)",
                             }}
                           >
-                            {formation.icon}
-                          </div>
-                          <div className="flex flex-col items-end gap-1.5">
-                            {formation.isNew && (
-                              <span
-                                className="text-[9px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full"
-                                style={{
-                                  background: "rgba(0,212,255,0.08)",
-                                  color: "#0099bb",
-                                  border: "1px solid rgba(0,212,255,0.18)",
-                                }}
-                              >
-                                Nouveau
-                              </span>
-                            )}
-                            <span
-                              className="text-[9px] font-black tracking-widest uppercase px-2 py-0.5 rounded-full"
+                            {catLabel}
+                          </span>
+                          {formation.isNew && (
+                            <motion.span
+                              animate={{ opacity: [1, 0.55, 1] }}
+                              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                              className="text-[9px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full"
                               style={{
-                                background: "rgba(16,185,129,0.07)",
-                                color: "#059669",
-                                border: "1px solid rgba(16,185,129,0.16)",
+                                background: "white",
+                                color: accent.from,
+                                boxShadow: `0 2px 12px ${accent.from}50`,
                               }}
                             >
-                              Inclus DEV PASS
-                            </span>
-                          </div>
+                              Nouveau
+                            </motion.span>
+                          )}
                         </div>
 
-                        {/* Title + description */}
-                        <div className="flex-1">
-                          <h3 className="font-bold text-[#1a1a1a] text-base mb-1.5 leading-snug">
-                            {formation.title}
-                          </h3>
-                          <p className="text-[#777] text-sm leading-relaxed">
-                            {formation.description}
-                          </p>
-                        </div>
+                        {/* Central icon — bounces on hover */}
+                        <motion.div
+                          className="relative z-10 flex items-center justify-center text-3xl"
+                          animate={isHovered ? { scale: 1.12, rotate: -6 } : { scale: 1, rotate: 0 }}
+                          transition={{ duration: 0.25, ease: "easeOut" }}
+                          style={{
+                            width: 68,
+                            height: 68,
+                            borderRadius: 20,
+                            background: "rgba(255,255,255,0.2)",
+                            backdropFilter: "blur(14px)",
+                            WebkitBackdropFilter: "blur(14px)",
+                            border: "1.5px solid rgba(255,255,255,0.38)",
+                            boxShadow: "0 8px 32px rgba(0,0,0,0.14), inset 0 1px 0 rgba(255,255,255,0.4)",
+                          }}
+                        >
+                          {formation.icon}
+                        </motion.div>
 
-                        {/* Meta: level + modules + duration */}
-                        <div className="flex items-center gap-2.5 flex-wrap">
-                          <span
-                            className="text-[11px] font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1"
-                            style={{ background: accent.glow, color: accent.from }}
-                          >
-                            <span
-                              className="w-1.5 h-1.5 rounded-full inline-block"
-                              style={{ background: accent.from }}
-                            />
-                            {formation.level}
-                          </span>
+                        {/* Bottom meta strip */}
+                        <div className="absolute bottom-0 left-0 right-0 px-4 py-2.5 flex items-center gap-3" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.22), transparent)" }}>
                           {formation.modules && (
-                            <span className="text-[11px] text-[#aaa] font-medium">
+                            <span className="flex items-center gap-1 text-[10px] font-semibold text-white/80">
+                              <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                              </svg>
                               {formation.modules} modules
                             </span>
                           )}
                           {formation.duration && (
-                            <span className="text-[11px] text-[#aaa] font-medium">
-                              · {formation.duration}
+                            <span className="flex items-center gap-1 text-[10px] font-semibold text-white/80">
+                              <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              {formation.duration}
                             </span>
                           )}
+                          <span
+                            className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full"
+                            style={{ background: "rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.9)" }}
+                          >
+                            {formation.level}
+                          </span>
                         </div>
+                      </div>
+
+                      {/* ── CARD BODY ── */}
+                      <div className="p-5 flex flex-col gap-3 flex-1">
+
+                        {/* DEV PASS badge */}
+                        <span
+                          className="self-start text-[9px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full"
+                          style={{
+                            background: "rgba(16,185,129,0.08)",
+                            color: "#059669",
+                            border: "1px solid rgba(16,185,129,0.16)",
+                          }}
+                        >
+                          Inclus DEV PASS
+                        </span>
+
+                        {/* Title */}
+                        <h3
+                          className="font-bold text-base leading-snug"
+                          style={{
+                            color: isHovered ? accent.from : "#1a1a1a",
+                            transition: "color 0.25s ease",
+                          }}
+                        >
+                          {formation.title}
+                        </h3>
+
+                        {/* Description */}
+                        <p className="text-[#888] text-sm leading-relaxed flex-1" style={{ display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                          {formation.description}
+                        </p>
 
                         {/* Topics chips */}
                         <div className="flex flex-wrap gap-1.5">
                           {formation.topics.map((topic) => (
                             <span
                               key={topic}
-                              className="text-[11px] text-[#888] bg-[#f4f4f2] rounded-lg px-2 py-0.5 font-medium"
+                              className="text-[11px] font-medium px-2.5 py-1 rounded-lg transition-all duration-200"
+                              style={{
+                                background: isHovered ? `${accent.glow}` : "#f4f4f2",
+                                color: isHovered ? accent.from : "#777",
+                                transition: "background 0.25s ease, color 0.25s ease",
+                              }}
                             >
                               {topic}
                             </span>
                           ))}
                         </div>
+
+                        {/* Divider */}
+                        <div className="h-px bg-[rgba(0,0,0,0.05)]" />
+
+                        {/* Footer CTA */}
+                        <a
+                          href={TELEGRAM_URL}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between"
+                        >
+                          <span
+                            className="text-xs font-semibold"
+                            style={{
+                              color: isHovered ? accent.from : "#aaa",
+                              transition: "color 0.25s ease",
+                            }}
+                          >
+                            Acceder a la formation
+                          </span>
+
+                          <motion.div
+                            animate={isHovered ? { x: 3, scale: 1.08 } : { x: 0, scale: 1 }}
+                            transition={{ duration: 0.2 }}
+                            className="w-7 h-7 rounded-full flex items-center justify-center"
+                            style={{
+                              background: isHovered ? `linear-gradient(135deg, ${accent.from}, ${accent.to})` : "#f4f4f2",
+                              transition: "background 0.25s ease",
+                            }}
+                          >
+                            <svg
+                              className="w-3.5 h-3.5"
+                              fill="none"
+                              stroke={isHovered ? "white" : "#aaa"}
+                              viewBox="0 0 24 24"
+                              style={{ transition: "stroke 0.25s ease" }}
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                            </svg>
+                          </motion.div>
+                        </a>
                       </div>
                     </div>
                   </motion.div>
@@ -639,9 +610,7 @@ export default function FormationsPage() {
             viewport={{ once: true }}
             className="text-center mb-10"
           >
-            <p className="text-xs font-bold tracking-[0.28em] uppercase text-[#909090] mb-3">
-              FAQ
-            </p>
+            <p className="text-xs font-bold tracking-[0.28em] uppercase text-[#909090] mb-3">FAQ</p>
             <h2
               className="font-heading font-bold text-[#1a1a1a] tracking-tight"
               style={{ fontSize: "clamp(1.75rem, 3vw, 2.25rem)" }}
@@ -663,38 +632,24 @@ export default function FormationsPage() {
                   className="bg-white rounded-2xl overflow-hidden"
                   style={{
                     border: "1px solid rgba(0,0,0,0.06)",
-                    boxShadow:
-                      openFaq === i ? "0 4px 24px rgba(0,0,0,0.07)" : "none",
+                    boxShadow: openFaq === i ? "0 4px 24px rgba(0,0,0,0.07)" : "none",
                   }}
                 >
                   <button
                     onClick={() => setOpenFaq(openFaq === i ? null : i)}
                     className="w-full flex items-center justify-between px-6 py-4 text-left"
                   >
-                    <span className="font-semibold text-[#1a1a1a] text-sm pr-4">
-                      {item.q}
-                    </span>
+                    <span className="font-semibold text-[#1a1a1a] text-sm pr-4">{item.q}</span>
                     <motion.div
                       animate={{ rotate: openFaq === i ? 45 : 0 }}
                       transition={{ duration: 0.2 }}
                       className="shrink-0 w-6 h-6 rounded-full flex items-center justify-center bg-[#f4f4f2]"
                     >
-                      <svg
-                        className="w-3 h-3 text-[#555]"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2.5}
-                          d="M12 5v14M5 12h14"
-                        />
+                      <svg className="w-3 h-3 text-[#555]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 5v14M5 12h14" />
                       </svg>
                     </motion.div>
                   </button>
-
                   <AnimatePresence>
                     {openFaq === i && (
                       <motion.div
@@ -704,9 +659,7 @@ export default function FormationsPage() {
                         transition={{ duration: 0.25 }}
                         style={{ overflow: "hidden" }}
                       >
-                        <p className="px-6 pb-5 text-sm text-[#666] leading-relaxed">
-                          {item.a}
-                        </p>
+                        <p className="px-6 pb-5 text-sm text-[#666] leading-relaxed">{item.a}</p>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -728,53 +681,22 @@ export default function FormationsPage() {
             viewport={{ once: true }}
           >
             <div className="relative bg-[#1a1a1a] rounded-3xl p-10 overflow-hidden">
-              {/* Blobs */}
-              <div
-                className="absolute -top-14 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full blur-3xl opacity-18 pointer-events-none"
-                style={{ background: "radial-gradient(circle, #00d4ff, transparent)" }}
-              />
-              <div
-                className="absolute bottom-0 right-0 w-44 h-44 rounded-full blur-3xl opacity-14 pointer-events-none"
-                style={{ background: "radial-gradient(circle, #7c3aed, transparent)" }}
-              />
-
+              <div className="absolute -top-14 left-1/2 -translate-x-1/2 w-72 h-72 rounded-full blur-3xl opacity-18 pointer-events-none" style={{ background: "radial-gradient(circle, #00d4ff, transparent)" }} />
+              <div className="absolute bottom-0 right-0 w-44 h-44 rounded-full blur-3xl opacity-14 pointer-events-none" style={{ background: "radial-gradient(circle, #7c3aed, transparent)" }} />
               <div className="relative z-10">
                 <div className="text-3xl mb-4">🚀</div>
-                <h2 className="font-heading font-black text-white text-3xl tracking-tight mb-3">
-                  Pret a commencer ?
-                </h2>
+                <h2 className="font-heading font-black text-white text-3xl tracking-tight mb-3">Pret a commencer ?</h2>
                 <p className="text-[rgba(255,255,255,0.5)] text-sm mb-8 max-w-xs mx-auto leading-relaxed">
-                  Contacte-moi sur Telegram ou WhatsApp. J&apos;active ton acces dans les
-                  24h suivant le paiement.
+                  Contacte-moi sur Telegram ou WhatsApp. J&apos;active ton acces dans les 24h suivant le paiement.
                 </p>
-
                 <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <a
-                    href={TELEGRAM_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl text-sm font-bold text-white transition-all duration-200 hover:opacity-90 hover:shadow-lg"
-                    style={{ background: "linear-gradient(135deg, #00d4ff, #7c3aed)" }}
-                  >
-                    {TELEGRAM_SVG}
-                    Telegram
+                  <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl text-sm font-bold text-white transition-all duration-200 hover:opacity-90" style={{ background: "linear-gradient(135deg, #00d4ff, #7c3aed)" }}>
+                    {TELEGRAM_SVG} Telegram
                   </a>
-                  <a
-                    href={WHATSAPP_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 hover:opacity-80"
-                    style={{
-                      background: "rgba(255,255,255,0.07)",
-                      color: "white",
-                      border: "1px solid rgba(255,255,255,0.1)",
-                    }}
-                  >
-                    {WHATSAPP_SVG}
-                    WhatsApp
+                  <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-2xl text-sm font-bold transition-all duration-200 hover:opacity-80" style={{ background: "rgba(255,255,255,0.07)", color: "white", border: "1px solid rgba(255,255,255,0.1)" }}>
+                    {WHATSAPP_SVG} WhatsApp
                   </a>
                 </div>
-
                 <p className="text-[rgba(255,255,255,0.22)] text-[11px] mt-5 tracking-wide">
                   Reponse garantie en moins de 24h · Activation immediate apres paiement
                 </p>
@@ -783,14 +705,7 @@ export default function FormationsPage() {
           </motion.div>
 
           <div className="flex justify-center mt-10">
-            <a
-              href="/"
-              className="text-xs font-semibold tracking-widest uppercase px-6 py-2.5 rounded-full transition-all duration-200 hover:text-[#1a1a1a]"
-              style={{
-                border: "1px solid rgba(0,0,0,0.12)",
-                color: "#888",
-              }}
-            >
+            <a href="/" className="text-xs font-semibold tracking-widest uppercase px-6 py-2.5 rounded-full transition-all duration-200 hover:text-[#1a1a1a]" style={{ border: "1px solid rgba(0,0,0,0.12)", color: "#888" }}>
               ← Retour au site
             </a>
           </div>
