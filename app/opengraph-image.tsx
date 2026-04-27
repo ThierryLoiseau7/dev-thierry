@@ -71,7 +71,9 @@ export default async function OGImage() {
             }}
           >
             {/* Photo */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
+              alt="Dev Thierry"
               src={imgSrc}
               style={{
                 width: "100%",

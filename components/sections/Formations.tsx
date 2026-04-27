@@ -35,11 +35,6 @@ export function Formations() {
     { ...CATEGORY_COUNTS }
   );
 
-  const categories = [
-    { label: "IA & Outils", count: counts.ia },
-    { label: "Web Dev", count: counts.webdev },
-    { label: "Web3", count: counts.web3 },
-  ];
 
   return (
     <section id="formations" className="py-20 md:py-28 bg-[#eaeae4]">
