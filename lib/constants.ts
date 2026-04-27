@@ -1,4 +1,4 @@
-import type { Project, Skill, TimelineEntry, GalleryItem } from "./types";
+import type { Project, Skill, TimelineEntry, GalleryItem, Formation } from "./types";
 
 export const TIMELINE: TimelineEntry[] = [
   {
@@ -124,6 +124,54 @@ export const PROJECTS: Project[] = [
     tags: ["Next.js", "DexScreener API", "GoPlus Security", "Telegram Bot"],
     featured: true,
     liveUrl: "https://dev-thierry.vercel.app/rugcheck",
+  },
+];
+
+export const FORMATIONS: Formation[] = [
+  {
+    id: "ai-website",
+    title: "AI pour Website",
+    description:
+      "Apprends a creer, optimiser et ameliorer des sites web complets grace a l'intelligence artificielle. De la conception au deploiement, utilise l'IA comme co-pilote.",
+    icon: "🌐",
+    level: "Debutant → Avance",
+    topics: ["Generer du code avec IA", "ChatGPT + Cursor", "Next.js + Vercel", "SEO automatise"],
+  },
+  {
+    id: "ai-design",
+    title: "AI pour Graphic Design",
+    description:
+      "Cree des visuels professionnels, logos, affiches et contenus reseaux sociaux en quelques minutes avec les meilleurs outils IA de design graphique.",
+    icon: "🎨",
+    level: "Debutant → Intermediaire",
+    topics: ["Midjourney & DALL-E", "Adobe Firefly", "Canva AI", "Prompts visuels"],
+  },
+  {
+    id: "ai-video",
+    title: "AI pour Montage Video",
+    description:
+      "Automatise le montage video, ajoute des sous-titres, genere des voix-off et cree des effets visuels avec l'IA. Produis du contenu de qualite professionnelle rapidement.",
+    icon: "🎬",
+    level: "Debutant → Intermediaire",
+    topics: ["CapCut AI", "Runway ML", "Sous-titres auto", "Voix-off IA"],
+  },
+  {
+    id: "ai-telegram",
+    title: "AI pour Creer Bot Telegram",
+    description:
+      "Construis des bots Telegram intelligents capables de repondre, automatiser des taches et interagir avec tes utilisateurs 24h/24 grace a l'IA.",
+    icon: "🤖",
+    level: "Intermediaire",
+    topics: ["Python + Telegram API", "Integrer Claude/GPT", "Commandes & menus", "Deploiement serveur"],
+  },
+  {
+    id: "ai-emploi",
+    title: "AI pour Chercher du Travail",
+    description:
+      "Utilise l'IA pour optimiser ton CV, ecrire des lettres de motivation percutantes, preparer les entretiens et trouver les meilleures opportunites professionnelles.",
+    icon: "💼",
+    level: "Tous niveaux",
+    topics: ["CV optimise par IA", "Lettres de motivation", "Simulation d'entretien", "LinkedIn & reseaux"],
   },
 ];
 

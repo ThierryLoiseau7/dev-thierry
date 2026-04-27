@@ -29,6 +29,15 @@ export interface TimelineEntry {
   phase: "webdev" | "web3" | "ai";
 }
 
+export interface Formation {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  level: string;
+  topics: string[];
+}
+
 export interface GalleryItem {
   id: string;
   title: string;

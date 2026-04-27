@@ -6,6 +6,7 @@ import { CounterStrip } from "@/components/sections/CounterStrip";
 import { About } from "@/components/sections/About";
 import { Skills } from "@/components/sections/Skills";
 import { Projects } from "@/components/sections/Projects";
+import { Formations } from "@/components/sections/Formations";
 import { Gallery } from "@/components/sections/Gallery";
 import { AIAgent } from "@/components/sections/AIAgent";
 import { Contact } from "@/components/sections/Contact";
@@ -20,6 +21,7 @@ export default function Home() {
       <About />
       <Skills />
       <Projects />
+      <Formations />
       <Gallery />
       <AIAgent />
       <Contact />

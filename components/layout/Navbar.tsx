@@ -7,6 +7,7 @@ const LINKS = [
   { href: "#home", label: "Home" },
   { href: "#services", label: "Services" },
   { href: "#projects", label: "My Work" },
+  { href: "#formations", label: "Formations" },
   { href: "#gallery", label: "Galerie" },
   { href: "#about", label: "About Me" },
 ];
@@ -52,7 +53,7 @@ export function Navbar() {
       });
       setDark(isDark);
 
-      const sections = ["#home", "#services", "#projects", "#gallery", "#about", "#contact"];
+      const sections = ["#home", "#services", "#projects", "#formations", "#gallery", "#about", "#contact"];
       for (const id of [...sections].reverse()) {
         const el = document.querySelector(id);
         if (el && el.getBoundingClientRect().top <= 120) {
