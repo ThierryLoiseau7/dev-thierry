@@ -1,8 +1,10 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useLang } from "@/lib/i18n/context";
 
 export function Footer() {
+  const { t } = useLang();
   return (
     <footer className="bg-[#1a1a1a] py-12">
       <div className="max-w-6xl mx-auto px-6">
@@ -18,7 +20,7 @@ export function Footer() {
               Dev Thierry
             </p>
             <p className="text-xs text-[#666666] mt-1 tracking-widest uppercase">
-              On-web · On-chain.
+              {t.footer.tagline}
             </p>
           </div>
 
@@ -68,7 +70,7 @@ export function Footer() {
             >
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 15l7-7 7 7" />
             </svg>
-            Back to top
+            {t.footer.backToTop}
           </a>
         </div>
       </div>

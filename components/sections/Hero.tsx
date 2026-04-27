@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { useLang } from "@/lib/i18n/context";
 
 /* ─── Letter-by-Letter Animator ─── */
 function AdLetters({
@@ -61,7 +62,7 @@ function StyledPhoto() {
           src="/thierry3.jpg"
           alt="Dev Thierry"
           fill
-          className="object-cover object-center"
+          className="object-cover object-top"
           priority
         />
       </div>
@@ -73,6 +74,7 @@ function StyledPhoto() {
 
 /* ─── Hero ─── */
 export function Hero() {
+  const { t } = useLang();
   return (
     <section
       id="home"
@@ -89,11 +91,11 @@ export function Hero() {
           className="font-heading font-bold text-[#1a1a1a] text-center leading-[1.05] tracking-tight text-balance"
           style={{ fontSize: "clamp(2.8rem, 7vw, 5.6rem)" }}
         >
-          Full-Stack Dev for Web,
+          {t.hero.heading1}
           <br />
-          Web3 &amp; AI Projects
+          {t.hero.heading2}
           <br />
-          <span className="text-[#888888]">Ready to Scale.</span>
+          <span className="text-[#888888]">{t.hero.heading3}</span>
         </motion.h1>
 
         {/* ── CTA button ── */}
@@ -107,7 +109,7 @@ export function Hero() {
             href="#projects"
             className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-[#1a1a1a] text-white font-semibold text-base hover:bg-[#333333] transition-colors duration-200"
           >
-            View My Work
+            {t.hero.cta}
           </a>
         </motion.div>
 
@@ -130,27 +132,27 @@ export function Hero() {
           className="mt-6 w-full flex flex-col gap-3"
         >
           <AdLetters
-            text="AI can build it"
+            text={t.hero.ad1}
             delay={0.9}
             className="text-[11px] font-black tracking-[0.35em] uppercase select-none"
             style={{ color: "#888888" }}
           />
           <div>
             <AdLetters
-              text="Only you can"
+              text={t.hero.ad2}
               delay={1.2}
               className="font-heading font-black leading-none tracking-tight select-none"
               style={{ fontSize: "clamp(2rem, 5.5vw, 4rem)", color: "#1a1a1a" }}
             />
             <div className="flex items-baseline flex-wrap gap-x-[0.2em]">
               <AdLetters
-                text="make it"
+                text={t.hero.ad3}
                 delay={1.6}
                 className="font-heading font-black leading-none tracking-tight select-none"
                 style={{ fontSize: "clamp(2rem, 5.5vw, 4rem)", color: "#1a1a1a" }}
               />
               <AdLetters
-                text="matter."
+                text={t.hero.ad4}
                 delay={1.85}
                 className="font-heading font-black leading-none tracking-tight select-none"
                 style={{ fontSize: "clamp(2rem, 5.5vw, 4rem)", color: "#888888" }}
@@ -168,14 +170,14 @@ export function Hero() {
           {[
             {
               num: "01",
-              main: "MARKETING & CREATIVITY",
-              sub: "ARE THE FUTURE.",
+              main: t.hero.m1main,
+              sub: t.hero.m1sub,
               delay: 0.9,
             },
             {
               num: "02",
-              main: "I'M HERE TO SHOW YOU",
-              sub: "WHAT YOU CANNOT THINK.",
+              main: t.hero.m2main,
+              sub: t.hero.m2sub,
               delay: 1.3,
             },
           ].map(({ num, main, sub, delay }) => (

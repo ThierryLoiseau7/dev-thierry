@@ -1,9 +1,11 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { FORMATIONS } from "@/lib/constants";
+import { useLang } from "@/lib/i18n/context";
 
-const CATEGORY_COUNTS = {
+const CATEGORY_COUNTS: Record<string, number> = {
   ia: 0,
   webdev: 0,
   web3: 0,
@@ -21,15 +23,10 @@ const ARROW_ICON = (
   </svg>
 );
 
-const PASS_FEATURES = [
-  "Toutes les formations incluses",
-  "Sessions live coding mensuelles",
-  "Discord + ressources telechargeable",
-  "Nouvelles formations chaque mois",
-  "Certificat de completion",
-];
 
 export function Formations() {
+  const { t } = useLang();
+  const f = t.formations;
   const counts = FORMATIONS.reduce(
     (acc, f) => {
       if (f.category) acc[f.category] = (acc[f.category] ?? 0) + 1;
@@ -56,73 +53,178 @@ export function Formations() {
           transition={{ duration: 0.4 }}
           className="text-xs font-bold tracking-[0.28em] text-[#909090] uppercase mb-10 text-center"
         >
-          Formations
+          {f.label}
         </motion.p>
 
-        {/* Two-column layout */}
-        <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+        {/* Top row: headline + instructor card */}
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6 mb-10">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.45 }}
+          >
+            <h2
+              className="font-heading font-bold text-[#1a1a1a] tracking-tight leading-tight mb-3"
+              style={{ fontSize: "clamp(1.8rem, 3.5vw, 2.5rem)" }}
+            >
+              {f.title.split("Dev Thierry")[0]}<br />Dev Thierry
+            </h2>
+            <div className="flex items-center gap-5 flex-wrap">
+              <div>
+                <p className="font-black text-xl text-[#1a1a1a]">{FORMATIONS.length}+</p>
+                <p className="text-[10px] text-[#888] uppercase tracking-wide">{f.statsFormations}</p>
+              </div>
+              <div className="h-6 w-px bg-[rgba(0,0,0,0.1)]" />
+              <div>
+                <p className="font-black text-xl text-[#1a1a1a]">7</p>
+                <p className="text-[10px] text-[#888] uppercase tracking-wide">{f.statsExp}</p>
+              </div>
+              <div className="h-6 w-px bg-[rgba(0,0,0,0.1)]" />
+              <div>
+                <p className="font-black text-xl" style={{ color: "#7c3aed" }}>100%</p>
+                <p className="text-[10px] text-[#888] uppercase tracking-wide">{f.statsPractice}</p>
+              </div>
+            </div>
+          </motion.div>
 
-          {/* Left: headline + category pills + stats */}
+          {/* Instructor card */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: 0.05 }}
+          >
+            <div
+              className="inline-flex items-center gap-3.5 bg-white rounded-2xl px-4 py-3"
+              style={{ border: "1px solid rgba(0,0,0,0.08)", boxShadow: "0 4px 20px rgba(0,0,0,0.07)" }}
+            >
+              <div style={{ padding: 2.5, background: "linear-gradient(135deg, #00d4ff, #7c3aed)", borderRadius: "50%" }}>
+                <div className="w-11 h-11 rounded-full overflow-hidden">
+                  <Image
+                    src="/thierry3.jpg"
+                    alt="Dev Thierry"
+                    width={44}
+                    height={44}
+                    className="object-cover object-top w-full h-full"
+                  />
+                </div>
+              </div>
+              <div>
+                <p className="font-black text-[#1a1a1a] text-sm tracking-tight leading-none mb-0.5">Dev Thierry</p>
+                <p className="text-[#999] text-[11px] font-medium tracking-wider">Pour vous servir ✦</p>
+              </div>
+              <div className="w-2 h-2 rounded-full shrink-0" style={{ background: "#22c55e", boxShadow: "0 0 6px rgba(34,197,94,0.6)" }} />
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Two cards: Crypto Experience (left) + Plan à Vie (right) */}
+        <div className="grid lg:grid-cols-2 gap-6 items-stretch">
+
+          {/* LEFT: Crypto Experience Package — même style dark */}
           <motion.div
             initial={{ opacity: 0, x: -24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2
-              className="font-heading font-bold text-[#1a1a1a] tracking-tight mb-5 leading-tight"
-              style={{ fontSize: "clamp(2rem, 4vw, 2.8rem)" }}
-            >
-              Apprends avec<br />Dev Thierry
-            </h2>
-            <p className="text-[#666666] text-base leading-relaxed mb-8 max-w-md">
-              Des formations pratiques sur l&apos;IA, le Web Dev et le Web3.
-              Un seul abonnement, un acces illimite, un prix fixe.
-            </p>
+            <div className="relative bg-[#1a1a1a] rounded-3xl p-8 overflow-hidden h-full flex flex-col">
+              <div
+                className="absolute -top-10 -right-10 w-48 h-48 rounded-full blur-3xl pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(0,212,255,0.2), transparent)" }}
+              />
+              <div
+                className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full blur-3xl pointer-events-none"
+                style={{ background: "radial-gradient(circle, rgba(124,58,237,0.18), transparent)" }}
+              />
 
-            {/* Category pills */}
-            <div className="flex flex-wrap gap-2.5 mb-8">
-              {categories.map((cat) => (
-                <div
-                  key={cat.label}
-                  className="flex items-center gap-2 bg-white border border-[rgba(0,0,0,0.08)] rounded-full px-4 py-2 text-sm font-medium text-[#444444]"
-                >
-                  <span>{cat.label}</span>
-                  <span className="text-xs font-bold text-[#888] bg-[#f0f0ec] rounded-full px-2 py-0.5">
-                    {cat.count}
+              <div className="relative z-10 flex flex-col h-full">
+                {/* Badges */}
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-[11px] font-black tracking-[0.2em] uppercase px-3 py-1.5 rounded-full text-[#00d4ff] border border-[rgba(0,212,255,0.3)] bg-[rgba(0,212,255,0.08)]">
+                    {f.cryptoLabel}
+                  </span>
+                  <span className="text-[10px] font-bold tracking-widest uppercase text-[rgba(255,255,255,0.4)] bg-[rgba(255,255,255,0.06)] px-3 py-1.5 rounded-full border border-[rgba(255,255,255,0.08)]">
+                    {f.cryptoTag}
                   </span>
                 </div>
-              ))}
-            </div>
 
-            {/* Stats row */}
-            <div className="flex items-center gap-6 flex-wrap">
-              <div>
-                <p className="font-black text-2xl text-[#1a1a1a]">{FORMATIONS.length}+</p>
-                <p className="text-xs text-[#888] uppercase tracking-wide">Formations</p>
-              </div>
-              <div className="h-8 w-px bg-[rgba(0,0,0,0.1)]" />
-              <div>
-                <p className="font-black text-2xl text-[#1a1a1a]">7</p>
-                <p className="text-xs text-[#888] uppercase tracking-wide">Ans d&apos;exp.</p>
-              </div>
-              <div className="h-8 w-px bg-[rgba(0,0,0,0.1)]" />
-              <div>
-                <p className="font-black text-2xl" style={{ color: "#7c3aed" }}>100%</p>
-                <p className="text-xs text-[#888] uppercase tracking-wide">Pratique</p>
+                {/* Icon + Title */}
+                <div className="flex items-center gap-3 mb-3">
+                  <div
+                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0"
+                    style={{ background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.2)" }}
+                  >
+                    ₿
+                  </div>
+                  <h3 className="font-heading font-black text-white text-xl leading-tight">
+                    {f.cryptoTitle.split(" ").slice(0, -1).join(" ")}<br />{f.cryptoTitle.split(" ").slice(-1)}
+                  </h3>
+                </div>
+
+                <p className="text-[rgba(255,255,255,0.5)] text-sm leading-relaxed mb-6">
+                  {f.cryptoDesc}
+                </p>
+
+                {/* Topics */}
+                <div className="space-y-2.5 mb-6 flex-1">
+                  {f.cryptoTopics.map((item) => (
+                    <div key={item} className="flex items-center gap-3">
+                      <div
+                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
+                        style={{ background: "rgba(0,212,255,0.12)", border: "1px solid rgba(0,212,255,0.28)" }}
+                      >
+                        {CHECK_ICON}
+                      </div>
+                      <span className="text-sm text-[rgba(255,255,255,0.72)]">{item}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Disclaimer */}
+                <p
+                  className="text-[10px] leading-relaxed mb-5 px-3 py-2 rounded-xl"
+                  style={{ background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.08)" }}
+                >
+                  {f.cryptoDisclaimer}
+                </p>
+
+                {/* Price + CTA */}
+                <div className="mt-auto">
+                  <div className="mb-1">
+                    <span className="text-5xl font-black text-white">{f.cryptoPrice}</span>
+                    <span className="text-base text-[rgba(255,255,255,0.4)] ml-1.5">{f.cryptoPriceSub}</span>
+                  </div>
+                  <p className="text-[rgba(255,255,255,0.35)] text-sm mb-5">
+                    {f.cryptoPriceDesc}
+                  </p>
+                  <a
+                    href="https://t.me/haiticoin7"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:opacity-90 hover:shadow-xl"
+                    style={{ background: "linear-gradient(135deg, #00d4ff, #7c3aed)" }}
+                  >
+                    {f.cryptoCta}
+                    {ARROW_ICON}
+                  </a>
+                  <p className="text-center text-[rgba(255,255,255,0.22)] text-[11px] mt-3">
+                    {f.payNote}
+                  </p>
+                </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Right: DEV PASS dark card */}
+          {/* RIGHT: Plan à Vie */}
           <motion.div
             initial={{ opacity: 0, x: 24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <div className="relative bg-[#1a1a1a] rounded-3xl p-8 overflow-hidden">
-              {/* Glow orbs */}
+            <div className="relative bg-[#1a1a1a] rounded-3xl p-8 overflow-hidden h-full flex flex-col">
               <div
                 className="absolute -top-10 -right-10 w-44 h-44 rounded-full blur-3xl pointer-events-none"
                 style={{ background: "radial-gradient(circle, rgba(0,212,255,0.22), transparent)" }}
@@ -132,57 +234,50 @@ export function Formations() {
                 style={{ background: "radial-gradient(circle, rgba(124,58,237,0.18), transparent)" }}
               />
 
-              <div className="relative z-10">
-                {/* Badges */}
+              <div className="relative z-10 flex flex-col h-full">
                 <div className="flex items-center justify-between mb-6">
                   <span className="text-[11px] font-black tracking-[0.2em] uppercase px-3 py-1.5 rounded-full text-[#00d4ff] border border-[rgba(0,212,255,0.3)] bg-[rgba(0,212,255,0.08)]">
-                    DEV PASS
+                    {f.planLabel}
                   </span>
                   <span className="text-[10px] font-bold tracking-widest uppercase text-[rgba(255,255,255,0.4)] bg-[rgba(255,255,255,0.06)] px-3 py-1.5 rounded-full border border-[rgba(255,255,255,0.08)]">
-                    Populaire
+                    {f.planTag}
                   </span>
                 </div>
 
-                {/* Price */}
                 <div className="mb-1">
-                  <span className="text-5xl font-black text-white">$20</span>
-                  <span className="text-[rgba(255,255,255,0.45)] text-lg ml-1">/mois</span>
+                  <span className="text-5xl font-black text-white">$2000</span>
                 </div>
                 <p className="text-[rgba(255,255,255,0.35)] text-sm mb-7">
-                  Facture annuellement — $240/an
+                  {f.planDesc}
                 </p>
 
-                {/* Features list */}
-                <div className="space-y-3 mb-7">
-                  {PASS_FEATURES.map((f) => (
-                    <div key={f} className="flex items-center gap-3">
+                <div className="space-y-3 mb-7 flex-1">
+                  {f.planFeatures.map((feat) => (
+                    <div key={feat} className="flex items-center gap-3">
                       <div
                         className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-                        style={{
-                          background: "rgba(0,212,255,0.12)",
-                          border: "1px solid rgba(0,212,255,0.28)",
-                        }}
+                        style={{ background: "rgba(0,212,255,0.12)", border: "1px solid rgba(0,212,255,0.28)" }}
                       >
                         {CHECK_ICON}
                       </div>
-                      <span className="text-sm text-[rgba(255,255,255,0.72)]">{f}</span>
+                      <span className="text-sm text-[rgba(255,255,255,0.72)]">{feat}</span>
                     </div>
                   ))}
                 </div>
 
-                {/* CTA */}
-                <a
-                  href="/formations"
-                  className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:opacity-90 hover:shadow-xl"
-                  style={{ background: "linear-gradient(135deg, #00d4ff, #7c3aed)" }}
-                >
-                  Voir toutes les formations
-                  {ARROW_ICON}
-                </a>
-
-                <p className="text-center text-[rgba(255,255,255,0.22)] text-[11px] mt-3">
-                  Paiement par contact direct — reponse en moins de 24h
-                </p>
+                <div className="mt-auto">
+                  <a
+                    href="/formations"
+                    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:opacity-90 hover:shadow-xl"
+                    style={{ background: "linear-gradient(135deg, #00d4ff, #7c3aed)" }}
+                  >
+                    {f.planCta}
+                    {ARROW_ICON}
+                  </a>
+                  <p className="text-center text-[rgba(255,255,255,0.22)] text-[11px] mt-3">
+                    {f.planPayNote}
+                  </p>
+                </div>
               </div>
             </div>
           </motion.div>

@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, Work_Sans } from "next/font/google";
+import { cookies } from "next/headers";
+import { LangProvider } from "@/lib/i18n/context";
+import type { Lang } from "@/lib/i18n/translations";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -48,15 +51,20 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get("lang")?.value ?? "en") as Lang;
+
   return (
-    <html lang="en">
+    <html lang={lang}>
       <body className={`${jakarta.variable} ${workSans.variable} antialiased bg-[#f5f5f0]`}>
-        {children}
+        <LangProvider initialLang={lang}>
+          {children}
+        </LangProvider>
       </body>
     </html>
   );

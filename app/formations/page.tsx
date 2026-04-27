@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -11,7 +12,7 @@ const WHATSAPP_URL = "https://wa.me/33646899310";
 
 const FAQ_DATA = [
   {
-    q: "Comment souscrire au DEV PASS ?",
+    q: "Comment obtenir le Plan a Vie ?",
     a: "Contacte-moi directement via Telegram ou WhatsApp. Je t'envoie les instructions de paiement et t'active l'acces dans les 24h suivant le paiement.",
   },
   {
@@ -27,12 +28,12 @@ const FAQ_DATA = [
     a: "Oui, toutes les formations sont enregistrees et disponibles 24h/24. Tu avances a ton propre rythme, sans deadline.",
   },
   {
-    q: "Y a-t-il une periode d'essai ?",
-    a: "Le plan GRATUIT te donne acces a 3 formations d'introduction pour tester le contenu avant de souscrire au DEV PASS.",
+    q: "Le plan gratuit donne acces a quoi ?",
+    a: "Le plan GRATUIT inclut un meeting 1h de presentation de la plateforme, l'acces au canal Telegram, et une consultation gratuite de 10 minutes maximum.",
   },
   {
-    q: "Puis-je annuler mon abonnement ?",
-    a: "L'abonnement est annuel. En cas de probleme, contacte-moi directement — je gere chaque situation personnellement.",
+    q: "Les futures formations sont-elles incluses ?",
+    a: "Oui, le Plan a Vie inclut toutes les formations qui existent aujourd'hui ET toutes celles qui arriveront dans le futur — sans frais supplementaires.",
   },
 ];
 
@@ -52,15 +53,16 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const ACCENT_COLORS: Record<string, { from: string; to: string; glow: string }> = {
-  "ai-website":        { from: "#6366f1", to: "#8b5cf6", glow: "rgba(99,102,241,0.12)" },
-  "ai-design":         { from: "#ec4899", to: "#f43f5e", glow: "rgba(236,72,153,0.12)" },
-  "ai-video":          { from: "#f59e0b", to: "#ef4444", glow: "rgba(245,158,11,0.12)" },
-  "ai-telegram":       { from: "#0088cc", to: "#0ea5e9", glow: "rgba(0,136,204,0.12)" },
-  "ai-emploi":         { from: "#10b981", to: "#059669", glow: "rgba(16,185,129,0.12)" },
-  "webdev-nextjs":     { from: "#00d4ff", to: "#0077bb", glow: "rgba(0,212,255,0.12)" },
-  "webdev-typescript": { from: "#3b82f6", to: "#6366f1", glow: "rgba(59,130,246,0.12)" },
-  "web3-solidity":     { from: "#7c3aed", to: "#4f46e5", glow: "rgba(124,58,237,0.12)" },
-  "web3-dapp":         { from: "#06b6d4", to: "#0891b2", glow: "rgba(6,182,212,0.12)" },
+  "ai-website":         { from: "#6366f1", to: "#8b5cf6", glow: "rgba(99,102,241,0.12)" },
+  "ai-design":          { from: "#ec4899", to: "#f43f5e", glow: "rgba(236,72,153,0.12)" },
+  "ai-video":           { from: "#f59e0b", to: "#ef4444", glow: "rgba(245,158,11,0.12)" },
+  "ai-telegram":        { from: "#0088cc", to: "#0ea5e9", glow: "rgba(0,136,204,0.12)" },
+  "ai-emploi":          { from: "#10b981", to: "#059669", glow: "rgba(16,185,129,0.12)" },
+  "ai-automatisation":  { from: "#f59e0b", to: "#f97316", glow: "rgba(245,158,11,0.12)" },
+  "ai-marketing":       { from: "#ec4899", to: "#a855f7", glow: "rgba(236,72,153,0.12)" },
+  "ai-nodejs":          { from: "#22c55e", to: "#16a34a", glow: "rgba(34,197,94,0.12)" },
+  "ai-smartcontrat":    { from: "#7c3aed", to: "#4f46e5", glow: "rgba(124,58,237,0.12)" },
+  "crypto-experience":  { from: "#f59e0b", to: "#f97316", glow: "rgba(245,158,11,0.12)" },
 };
 
 const TELEGRAM_SVG = (
@@ -104,74 +106,96 @@ export default function FormationsPage() {
           />
         </div>
 
-        <div className="max-w-3xl mx-auto px-6 text-center relative z-10">
-          <motion.span
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45 }}
-            className="inline-block text-[11px] font-black tracking-[0.28em] uppercase px-4 py-1.5 rounded-full mb-5"
-            style={{
-              background: "rgba(0,212,255,0.08)",
-              color: "#009ab8",
-              border: "1px solid rgba(0,212,255,0.2)",
-            }}
-          >
-            DEV PASS · Programme de Formation
-          </motion.span>
+        <div className="max-w-6xl mx-auto px-6 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
 
-          <motion.h1
-            initial={{ opacity: 0, y: 22 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.08 }}
-            className="font-heading font-black text-[#1a1a1a] tracking-tight mb-5 leading-none"
-            style={{ fontSize: "clamp(2.5rem, 6vw, 4rem)" }}
-          >
-            Apprends. Build.{" "}
-            <span
-              style={{
-                backgroundImage: "linear-gradient(135deg, #00d4ff, #7c3aed)",
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-                backgroundClip: "text",
-              }}
+            {/* Texte */}
+            <div className="flex-1 text-center lg:text-left">
+              <motion.h1
+                initial={{ opacity: 0, y: 22 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.08 }}
+                className="font-heading font-black text-[#1a1a1a] tracking-tight mb-5 leading-none"
+                style={{ fontSize: "clamp(2.5rem, 6vw, 4rem)" }}
+              >
+                Apprends. Build.{" "}
+                <span
+                  style={{
+                    backgroundImage: "linear-gradient(135deg, #00d4ff, #7c3aed)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  Ship.
+                </span>
+              </motion.h1>
+
+              <motion.p
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.15 }}
+                className="text-[#666] text-lg leading-relaxed mb-10 max-w-xl lg:mx-0 mx-auto"
+              >
+                Des formations pratiques sur l&apos;IA, le Web Dev et le Web3 — par un
+                developpeur qui{" "}
+                <strong className="text-[#1a1a1a] font-semibold">build vraiment</strong>.
+                Un acces illimite a vie pour{" "}
+                <strong className="text-[#1a1a1a] font-semibold">$2000</strong> — paiement
+                unique, formations actuelles et futures incluses.
+              </motion.p>
+
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.22 }}
+                className="flex items-center justify-center lg:justify-start gap-8 flex-wrap"
+              >
+                {[
+                  { value: `${FORMATIONS.length}+`, label: "Formations" },
+                  { value: "3", label: "Categories" },
+                  { value: "$2000", label: "a vie · paiement unique" },
+                ].map((stat) => (
+                  <div key={stat.label} className="text-center">
+                    <p className="font-black text-2xl text-[#1a1a1a]">{stat.value}</p>
+                    <p className="text-[10px] uppercase tracking-widest text-[#999] mt-0.5">
+                      {stat.label}
+                    </p>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            {/* Photo */}
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+              className="shrink-0"
             >
-              Ship.
-            </span>
-          </motion.h1>
+              <motion.div
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                style={{
+                  width: "clamp(220px, 28vw, 360px)",
+                  height: "clamp(280px, 36vw, 460px)",
+                  borderRadius: "40% 60% 55% 45% / 50% 45% 55% 50%",
+                  overflow: "hidden",
+                  border: "1px solid rgba(26,26,26,0.1)",
+                  boxShadow: "0 20px 60px rgba(0,212,255,0.1), 0 8px 30px rgba(0,0,0,0.08)",
+                }}
+              >
+                <Image
+                  src="/thierry.jpg"
+                  alt="Dev Thierry"
+                  fill
+                  className="object-cover object-top"
+                  priority
+                />
+              </motion.div>
+            </motion.div>
 
-          <motion.p
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.15 }}
-            className="text-[#666] text-lg max-w-xl mx-auto leading-relaxed mb-10"
-          >
-            Des formations pratiques sur l&apos;IA, le Web Dev et le Web3 — par un
-            developpeur qui{" "}
-            <strong className="text-[#1a1a1a] font-semibold">build vraiment</strong>.
-            Un acces illimite pour{" "}
-            <strong className="text-[#1a1a1a] font-semibold">$20/mois</strong>, facture
-            annuellement.
-          </motion.p>
-
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.22 }}
-            className="flex items-center justify-center gap-8 flex-wrap"
-          >
-            {[
-              { value: `${FORMATIONS.length}+`, label: "Formations" },
-              { value: "3", label: "Categories" },
-              { value: "$20", label: "/mois · annuel" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className="font-black text-2xl text-[#1a1a1a]">{stat.value}</p>
-                <p className="text-[10px] uppercase tracking-widest text-[#999] mt-0.5">
-                  {stat.label}
-                </p>
-              </div>
-            ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
@@ -191,11 +215,11 @@ export default function FormationsPage() {
               className="font-heading font-bold text-[#1a1a1a] tracking-tight"
               style={{ fontSize: "clamp(1.75rem, 3vw, 2.25rem)" }}
             >
-              Un seul abonnement, un acces total
+              Un seul paiement, un acces a vie
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-5 items-start">
+          <div className="grid md:grid-cols-2 gap-5 items-start max-w-2xl mx-auto">
             {MEMBERSHIP_PLANS.map((plan, i) => (
               <motion.div
                 key={plan.id}
@@ -228,15 +252,20 @@ export default function FormationsPage() {
                       <span className={`text-[10px] font-black tracking-[0.2em] uppercase ${plan.highlight ? "text-[#00d4ff]" : "text-[#888]"}`}>
                         {plan.name}
                       </span>
-                      {plan.highlight && (
+                      {plan.isLifetime && (
                         <span className="text-[9px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full" style={{ background: "rgba(0,212,255,0.1)", color: "#00c4ef", border: "1px solid rgba(0,212,255,0.22)" }}>
-                          Populaire
+                          Meilleure valeur
                         </span>
                       )}
                     </div>
                     <div className="mb-1">
                       {plan.priceMonthly === 0 ? (
                         <span className={`text-4xl font-black ${plan.highlight ? "text-white" : "text-[#1a1a1a]"}`}>Gratuit</span>
+                      ) : plan.isLifetime ? (
+                        <>
+                          <span className={`text-4xl font-black ${plan.highlight ? "text-white" : "text-[#1a1a1a]"}`}>${plan.priceMonthly}</span>
+                          <span className={`text-base ml-1 ${plan.highlight ? "text-[rgba(255,255,255,0.4)]" : "text-[#aaa]"}`}>a vie</span>
+                        </>
                       ) : (
                         <>
                           <span className={`text-4xl font-black ${plan.highlight ? "text-white" : "text-[#1a1a1a]"}`}>${plan.priceMonthly}</span>
@@ -245,7 +274,7 @@ export default function FormationsPage() {
                       )}
                     </div>
                     <p className={`text-xs mb-1 ${plan.highlight ? "text-[rgba(255,255,255,0.35)]" : "text-[#aaa]"}`}>
-                      {plan.billedAnnually ? `Facture $${plan.billedAnnually}/an` : "Sans engagement"}
+                      {plan.isLifetime ? "Paiement unique · formations actuelles + futures" : plan.billedAnnually ? `Facture $${plan.billedAnnually}/an` : "Sans engagement"}
                     </p>
                     <p className={`text-sm mb-6 ${plan.highlight ? "text-[rgba(255,255,255,0.55)]" : "text-[#666]"}`}>
                       {plan.tagline}
@@ -475,17 +504,34 @@ export default function FormationsPage() {
                         </motion.div>
 
                         {/* Bottom meta strip */}
-                        <div className="absolute bottom-0 left-0 right-0 px-4 py-2.5 flex items-center gap-3" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.22), transparent)" }}>
+                        <div className="absolute bottom-0 left-0 right-0 px-4 py-2.5 flex items-center gap-2.5" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.32), transparent)" }}>
+                          {/* Instructor avatar */}
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <div style={{ padding: 1.5, background: "rgba(255,255,255,0.35)", borderRadius: "50%", boxShadow: "0 1px 6px rgba(0,0,0,0.2)" }}>
+                              <div className="w-5 h-5 rounded-full overflow-hidden">
+                                <Image
+                                  src="/thierry3.jpg"
+                                  alt="Dev Thierry"
+                                  width={20}
+                                  height={20}
+                                  className="object-cover object-top w-full h-full"
+                                />
+                              </div>
+                            </div>
+                            <span className="text-[9px] font-black tracking-wider text-white/80 uppercase">Dev Thierry</span>
+                          </div>
+                          {/* Divider */}
+                          <div className="w-px h-3 shrink-0" style={{ background: "rgba(255,255,255,0.2)" }} />
                           {formation.modules && (
-                            <span className="flex items-center gap-1 text-[10px] font-semibold text-white/80">
+                            <span className="flex items-center gap-1 text-[10px] font-semibold text-white/75">
                               <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                               </svg>
-                              {formation.modules} modules
+                              {formation.modules}
                             </span>
                           )}
                           {formation.duration && (
-                            <span className="flex items-center gap-1 text-[10px] font-semibold text-white/80">
+                            <span className="flex items-center gap-1 text-[10px] font-semibold text-white/75">
                               <svg className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                               </svg>
@@ -493,8 +539,8 @@ export default function FormationsPage() {
                             </span>
                           )}
                           <span
-                            className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full"
-                            style={{ background: "rgba(255,255,255,0.2)", color: "rgba(255,255,255,0.9)" }}
+                            className="ml-auto text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
+                            style={{ background: "rgba(255,255,255,0.18)", color: "rgba(255,255,255,0.9)" }}
                           >
                             {formation.level}
                           </span>
@@ -513,7 +559,7 @@ export default function FormationsPage() {
                             border: "1px solid rgba(16,185,129,0.16)",
                           }}
                         >
-                          Inclus DEV PASS
+                          Inclus Plan a Vie
                         </span>
 
                         {/* Title */}

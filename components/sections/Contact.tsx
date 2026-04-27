@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { useLang } from "@/lib/i18n/context";
 import { useState } from "react";
 
 const schema = z.object({
@@ -17,6 +18,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 export function Contact() {
+  const { t } = useLang();
   const [sent, setSent] = useState(false);
 
   const {
@@ -40,9 +42,9 @@ export function Contact() {
     <section id="contact" className="py-24 md:py-32 bg-[#f5f5f0]">
       <div className="max-w-4xl mx-auto px-6">
         <SectionHeading
-          label="Let's Build"
-          title="Start a Project"
-          subtitle="Have a project in mind? Let's discuss how I can help."
+          label={t.contact.label}
+          title={t.contact.title}
+          subtitle={t.contact.subtitle}
         />
 
         <div className="grid md:grid-cols-2 gap-12">
@@ -56,33 +58,17 @@ export function Contact() {
           >
             <div>
               <h3 className="font-heading text-lg font-bold text-[#1a1a1a] mb-2">
-                Direct Contact
+                {t.contact.directTitle}
               </h3>
               <p className="text-[#666666] text-sm leading-relaxed font-work">
-                I&apos;m selective with projects — I take on work that challenges me
-                and creates real impact. If that sounds like you, reach out.
+                {t.contact.directDesc}
               </p>
             </div>
 
             {[
-              {
-                label: "Email",
-                value: "devthierry@pm.me",
-                href: "mailto:devthierry@pm.me",
-                color: "#16a34a",
-              },
-              {
-                label: "Phone",
-                value: "+33 6 46 89 93 10",
-                href: "tel:+33646899310",
-                color: "#7c3aed",
-              },
-              {
-                label: "Availability",
-                value: "Remote Worldwide",
-                href: undefined,
-                color: "#0284c7",
-              },
+              { label: t.contact.emailLabel, value: "devthierry@pm.me", href: "mailto:devthierry@pm.me", color: "#16a34a" },
+              { label: t.contact.phoneLabel, value: "+33 6 46 89 93 10", href: "tel:+33646899310", color: "#7c3aed" },
+              { label: t.contact.availLabel, value: t.contact.availValue, href: undefined, color: "#0284c7" },
             ].map(({ label, value, href, color }) => (
               <div key={label} className="flex items-start gap-4">
                 <div
@@ -125,42 +111,29 @@ export function Contact() {
           >
             {sent && (
               <div className="bg-[rgba(22,163,74,0.06)] border border-[rgba(22,163,74,0.2)] rounded-xl px-4 py-3 text-sm text-[#16a34a] font-medium">
-                Message ready — your email client should open.
+                {t.contact.sent}
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <input {...register("name")} placeholder="Full Name" className={inputClass} />
-                {errors.name && (
-                  <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
-                )}
+                <input {...register("name")} placeholder={t.contact.namePlaceholder} className={inputClass} />
+                {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}
               </div>
               <div>
-                <input {...register("email")} placeholder="Business Email" className={inputClass} />
-                {errors.email && (
-                  <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
-                )}
+                <input {...register("email")} placeholder={t.contact.emailPlaceholder} className={inputClass} />
+                {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>}
               </div>
             </div>
 
             <div>
-              <input {...register("subject")} placeholder="Project Subject" className={inputClass} />
-              {errors.subject && (
-                <p className="text-xs text-red-500 mt-1">{errors.subject.message}</p>
-              )}
+              <input {...register("subject")} placeholder={t.contact.subjectPlaceholder} className={inputClass} />
+              {errors.subject && <p className="text-xs text-red-500 mt-1">{errors.subject.message}</p>}
             </div>
 
             <div>
-              <textarea
-                {...register("message")}
-                placeholder="Tell me about your project..."
-                rows={5}
-                className={`${inputClass} resize-none`}
-              />
-              {errors.message && (
-                <p className="text-xs text-red-500 mt-1">{errors.message.message}</p>
-              )}
+              <textarea {...register("message")} placeholder={t.contact.messagePlaceholder} rows={5} className={`${inputClass} resize-none`} />
+              {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message.message}</p>}
             </div>
 
             <button
@@ -168,7 +141,7 @@ export function Contact() {
               disabled={isSubmitting}
               className="w-full py-3.5 rounded-xl bg-[#1a1a1a] text-white font-medium text-sm hover:bg-[#333333] transition-colors duration-200 disabled:opacity-60"
             >
-              {isSubmitting ? "Opening..." : "Send Message →"}
+              {isSubmitting ? t.contact.sending : t.contact.send}
             </button>
           </motion.form>
         </div>

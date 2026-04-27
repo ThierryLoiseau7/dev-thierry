@@ -2,58 +2,29 @@
 
 import { motion } from "framer-motion";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { useLang } from "@/lib/i18n/context";
 
-const SERVICES = [
-  {
-    icon: "🌐",
-    era: "Web Development",
-    years: "2018 – 2021",
-    headline: "Websites & web applications",
-    plain:
-      "The platforms you use every day — from blazing-fast online stores to powerful SaaS used by thousands. If it runs in a browser, I can build it.",
-    tech: "React · Next.js · Node.js · PostgreSQL",
-    color: "#16a34a",
-    bg: "rgba(22,163,74,0.05)",
-    border: "rgba(22,163,74,0.14)",
-  },
-  {
-    icon: "⛓",
-    era: "Blockchain & Web3",
-    years: "2021 – 2024",
-    headline: "Decentralised finance & NFTs",
-    plain:
-      "Financial tools without banks in the middle. Send money globally, trade digital assets, prove ownership — I build the software that makes it real.",
-    tech: "Solidity · Ethereum · DeFi · NFTs",
-    color: "#7c3aed",
-    bg: "rgba(124,58,237,0.05)",
-    border: "rgba(124,58,237,0.14)",
-  },
-  {
-    icon: "🤖",
-    era: "AI Agents",
-    years: "2024 – Now",
-    headline: "Autonomous AI that thinks & acts",
-    plain:
-      "AI that doesn't just chat — it researches, codes, decides, and executes on your behalf. Autonomous agents that work around the clock.",
-    tech: "Claude API · LLM Agents · AI Workflows",
-    color: "#0284c7",
-    bg: "rgba(2,132,199,0.05)",
-    border: "rgba(2,132,199,0.14)",
-  },
+const SERVICE_META = [
+  { icon: "🌐", years: "2018 – 2021", tech: "React · Next.js · Node.js · PostgreSQL", color: "#16a34a", bg: "rgba(22,163,74,0.05)", border: "rgba(22,163,74,0.14)" },
+  { icon: "⛓", years: "2021 – 2024", tech: "Solidity · Ethereum · DeFi · NFTs", color: "#7c3aed", bg: "rgba(124,58,237,0.05)", border: "rgba(124,58,237,0.14)" },
+  { icon: "🤖", years: "2024 – Now", tech: "Claude API · LLM Agents · AI Workflows", color: "#0284c7", bg: "rgba(2,132,199,0.05)", border: "rgba(2,132,199,0.14)" },
 ];
 
 export function WhatIBuild() {
+  const { t } = useLang();
+  const services = t.services.items.map((item, i) => ({ ...item, ...SERVICE_META[i] }));
+
   return (
     <section id="services" className="py-24 md:py-32 bg-[#f5f5f0]">
       <div className="max-w-6xl mx-auto px-6">
         <SectionHeading
-          label="Services"
-          title="Three Eras. One Vision."
-          subtitle="Whether you're a developer or have never written a line of code — here's what I build, in plain English."
+          label={t.services.label}
+          title={t.services.title}
+          subtitle={t.services.subtitle}
         />
 
         <div className="grid md:grid-cols-3 gap-5">
-          {SERVICES.map((s, i) => (
+          {services.map((s, i) => (
             <motion.div
               key={s.era}
               initial={{ opacity: 0, y: 40 }}

@@ -1,44 +1,45 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { useLang } from "@/lib/i18n/context";
+import type { Lang } from "@/lib/i18n/translations";
 
-const LINKS = [
-  { href: "#home", label: "Home" },
-  { href: "#services", label: "Services" },
-  { href: "#projects", label: "My Work" },
-  { href: "#formations", label: "Formations" },
-  { href: "#gallery", label: "Galerie" },
-  { href: "#about", label: "About Me" },
+const LANG_OPTIONS: { value: Lang; flag: string; label: string }[] = [
+  { value: "en", flag: "🇬🇧", label: "EN" },
+  { value: "fr", flag: "🇫🇷", label: "FR" },
+  { value: "es", flag: "🇪🇸", label: "ES" },
+  { value: "ht", flag: "🇭🇹", label: "HT" },
 ];
 
 const TOOLS = [
-  {
-    href: "/roast",
-    icon: "🔥",
-    label: "Roast My Website",
-    desc: "Feedback brutal sur ton site — gratuit",
-  },
-  {
-    href: "/audit",
-    icon: "🛡️",
-    label: "Contract Audit",
-    desc: "Analyse de sécurité Solidity — gratuit",
-  },
-  {
-    href: "/rugcheck",
-    icon: "🔍",
-    label: "Rug Pull Detector",
-    desc: "Scan memecoin — market cap, liquidité, sécurité",
-  },
+  { href: "/roast", icon: "🔥", label: "Roast My Website", desc: "Feedback brutal sur ton site — gratuit" },
+  { href: "/audit", icon: "🛡️", label: "Contract Audit", desc: "Analyse de sécurité Solidity — gratuit" },
+  { href: "/rugcheck", icon: "🔍", label: "Rug Pull Detector", desc: "Scan memecoin — market cap, liquidité, sécurité" },
 ];
 
 export function Navbar() {
+  const { t, lang, setLang } = useLang();
+  const pathname = usePathname();
+  const isSubPage = pathname !== "/";
+
   const [active, setActive] = useState("#home");
   const [dark, setDark] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
+  const [langOpen, setLangOpen] = useState(false);
   const toolsRef = useRef<HTMLDivElement>(null);
+  const langRef = useRef<HTMLDivElement>(null);
+
+  const LINKS = [
+    { href: "#home", label: t.nav.home },
+    { href: "#services", label: t.nav.services },
+    { href: "#projects", label: t.nav.work },
+    { href: "#formations", label: t.nav.formations },
+    { href: "#gallery", label: t.nav.gallery },
+    { href: "#about", label: t.nav.about },
+  ];
 
   useEffect(() => {
     const onScroll = () => {
@@ -62,17 +63,14 @@ export function Navbar() {
         }
       }
     };
-
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close tools dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (toolsRef.current && !toolsRef.current.contains(e.target as Node)) {
-        setToolsOpen(false);
-      }
+      if (toolsRef.current && !toolsRef.current.contains(e.target as Node)) setToolsOpen(false);
+      if (langRef.current && !langRef.current.contains(e.target as Node)) setLangOpen(false);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
@@ -85,6 +83,8 @@ export function Navbar() {
   const pillBg = dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.09)";
   const ctaBg = dark ? "#ffffff" : "#1a1a1a";
   const ctaText = dark ? "#1a1a1a" : "#ffffff";
+
+  const currentLang = LANG_OPTIONS.find((l) => l.value === lang);
 
   return (
     <>
@@ -106,7 +106,7 @@ export function Navbar() {
             }}
           >
             {/* Logo */}
-            <a href="#home" className="flex items-center gap-2.5 shrink-0 group">
+            <a href={isSubPage ? "/" : "#home"} className="flex items-center gap-2.5 shrink-0 group">
               <div
                 className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 transition-opacity group-hover:opacity-80"
                 style={{ background: dark ? "#ffffff" : "#1a1a1a" }}
@@ -124,14 +124,15 @@ export function Navbar() {
             {/* Desktop nav links */}
             <nav className="hidden md:flex items-center gap-1">
               {LINKS.map(({ href, label }) => {
-                const isActive = active === href;
+                const isActive = !isSubPage && active === href;
+                const resolvedHref = isSubPage ? `/${href}` : href;
                 return (
                   <a
                     key={href}
-                    href={href}
+                    href={resolvedHref}
                     className="relative px-4 py-2 rounded-xl text-sm font-medium transition-colors duration-200"
                     style={{ color: isActive ? textColor : mutedColor }}
-                    onClick={() => setActive(href)}
+                    onClick={() => !isSubPage && setActive(href)}
                   >
                     {isActive && (
                       <motion.span
@@ -147,7 +148,7 @@ export function Navbar() {
               })}
             </nav>
 
-            {/* Desktop right: Free Tools dropdown + CTA */}
+            {/* Desktop right */}
             <div className="hidden md:flex items-center gap-2">
 
               {/* Free Tools dropdown */}
@@ -155,22 +156,13 @@ export function Navbar() {
                 <button
                   onClick={() => setToolsOpen((v) => !v)}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 hover:opacity-80"
-                  style={{
-                    background: dark ? "rgba(255,255,255,0.08)" : "rgba(26,26,26,0.07)",
-                    color: mutedColor,
-                    letterSpacing: "0.04em",
-                  }}
+                  style={{ background: dark ? "rgba(255,255,255,0.08)" : "rgba(26,26,26,0.07)", color: mutedColor, letterSpacing: "0.04em" }}
                 >
-                  ⚡ Free Tools
-                  <svg
-                    className="w-3 h-3 transition-transform"
-                    style={{ transform: toolsOpen ? "rotate(180deg)" : "rotate(0deg)" }}
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                  >
+                  ⚡ {t.nav.freeTools}
+                  <svg className="w-3 h-3 transition-transform" style={{ transform: toolsOpen ? "rotate(180deg)" : "rotate(0deg)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-
                 <AnimatePresence>
                   {toolsOpen && (
                     <motion.div
@@ -179,24 +171,14 @@ export function Navbar() {
                       exit={{ opacity: 0, y: -6, scale: 0.97 }}
                       transition={{ duration: 0.18 }}
                       className="absolute right-0 top-full mt-2 w-64 rounded-2xl overflow-hidden"
-                      style={{
-                        background: dark ? "rgba(28,28,28,0.97)" : "rgba(250,250,248,0.98)",
-                        border: `1px solid ${border}`,
-                        boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-                        backdropFilter: "blur(20px)",
-                      }}
+                      style={{ background: dark ? "rgba(28,28,28,0.97)" : "rgba(250,250,248,0.98)", border: `1px solid ${border}`, boxShadow: "0 8px 32px rgba(0,0,0,0.12)", backdropFilter: "blur(20px)" }}
                     >
                       <div className="p-2">
                         <p className="text-[10px] font-black tracking-[0.2em] uppercase px-3 py-2" style={{ color: mutedColor }}>
                           Free AI Tools
                         </p>
                         {TOOLS.map(({ href, icon, label, desc }) => (
-                          <a
-                            key={href}
-                            href={href}
-                            onClick={() => setToolsOpen(false)}
-                            className="flex items-start gap-3 px-3 py-2.5 rounded-xl transition-colors hover:bg-black/5"
-                          >
+                          <a key={href} href={href} onClick={() => setToolsOpen(false)} className="flex items-start gap-3 px-3 py-2.5 rounded-xl transition-colors hover:bg-black/5">
                             <span className="text-lg mt-0.5 shrink-0">{icon}</span>
                             <div>
                               <p className="text-sm font-semibold" style={{ color: textColor }}>{label}</p>
@@ -210,13 +192,55 @@ export function Navbar() {
                 </AnimatePresence>
               </div>
 
+              {/* Language switcher */}
+              <div ref={langRef} className="relative">
+                <button
+                  onClick={() => setLangOpen((v) => !v)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all duration-200 hover:opacity-80"
+                  style={{ background: dark ? "rgba(255,255,255,0.08)" : "rgba(26,26,26,0.07)", color: mutedColor }}
+                >
+                  <span>{currentLang?.flag}</span>
+                  <span>{currentLang?.label}</span>
+                  <svg className="w-3 h-3 transition-transform" style={{ transform: langOpen ? "rotate(180deg)" : "rotate(0deg)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <AnimatePresence>
+                  {langOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                      transition={{ duration: 0.15 }}
+                      className="absolute right-0 top-full mt-2 w-36 rounded-2xl overflow-hidden"
+                      style={{ background: dark ? "rgba(28,28,28,0.97)" : "rgba(250,250,248,0.98)", border: `1px solid ${border}`, boxShadow: "0 8px 32px rgba(0,0,0,0.12)", backdropFilter: "blur(20px)" }}
+                    >
+                      <div className="p-1.5">
+                        {LANG_OPTIONS.map((opt) => (
+                          <button
+                            key={opt.value}
+                            onClick={() => { setLang(opt.value); setLangOpen(false); }}
+                            className="flex items-center gap-2.5 w-full px-3 py-2 rounded-xl text-sm transition-colors hover:bg-black/5"
+                            style={{ color: lang === opt.value ? textColor : mutedColor, fontWeight: lang === opt.value ? 700 : 500 }}
+                          >
+                            <span>{opt.flag}</span>
+                            <span>{opt.label}</span>
+                            {lang === opt.value && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-[#00d4ff]" />}
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* CTA */}
               <a
-                href="#contact"
+                href={isSubPage ? "/#contact" : "#contact"}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-85 shrink-0"
                 style={{ background: ctaBg, color: ctaText }}
               >
-                Start Your Project
+                {t.nav.startProject}
               </a>
             </div>
 
@@ -243,28 +267,40 @@ export function Navbar() {
               initial={{ opacity: 0, y: -6, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               className="mt-2 rounded-2xl overflow-hidden"
-              style={{
-                background: dark ? "rgba(28,28,28,0.95)" : "rgba(220,220,217,0.97)",
-                backdropFilter: "blur(20px)",
-                border: `1px solid ${border}`,
-                boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
-              }}
+              style={{ background: dark ? "rgba(28,28,28,0.95)" : "rgba(220,220,217,0.97)", backdropFilter: "blur(20px)", border: `1px solid ${border}`, boxShadow: "0 8px 32px rgba(0,0,0,0.12)" }}
             >
               <div className="flex flex-col p-3 gap-1">
                 {LINKS.map(({ href, label }) => (
                   <a
                     key={href}
-                    href={href}
-                    onClick={() => { setActive(href); setMobileOpen(false); }}
+                    href={isSubPage ? `/${href}` : href}
+                    onClick={() => { if (!isSubPage) setActive(href); setMobileOpen(false); }}
                     className="px-4 py-3 rounded-xl text-sm font-medium transition-colors"
-                    style={{
-                      color: active === href ? textColor : mutedColor,
-                      background: active === href ? pillBg : "transparent",
-                    }}
+                    style={{ color: (!isSubPage && active === href) ? textColor : mutedColor, background: (!isSubPage && active === href) ? pillBg : "transparent" }}
                   >
                     {label}
                   </a>
                 ))}
+
+                {/* Language switcher mobile */}
+                <div className="mt-1 pt-2" style={{ borderTop: `1px solid ${border}` }}>
+                  <p className="text-[10px] font-black tracking-[0.2em] uppercase px-4 pb-1" style={{ color: mutedColor }}>
+                    Langue / Language
+                  </p>
+                  <div className="flex gap-1 px-2">
+                    {LANG_OPTIONS.map((opt) => (
+                      <button
+                        key={opt.value}
+                        onClick={() => { setLang(opt.value); setMobileOpen(false); }}
+                        className="flex-1 flex flex-col items-center gap-0.5 py-2 rounded-xl text-xs font-bold transition-colors"
+                        style={{ background: lang === opt.value ? pillBg : "transparent", color: lang === opt.value ? textColor : mutedColor }}
+                      >
+                        <span className="text-base">{opt.flag}</span>
+                        <span>{opt.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
 
                 {/* Free tools section in mobile */}
                 <div className="mt-1 pt-2" style={{ borderTop: `1px solid ${border}` }}>
@@ -272,13 +308,7 @@ export function Navbar() {
                     Free AI Tools
                   </p>
                   {TOOLS.map(({ href, icon, label, desc }) => (
-                    <a
-                      key={href}
-                      href={href}
-                      onClick={() => setMobileOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors"
-                      style={{ color: textColor }}
-                    >
+                    <a key={href} href={href} onClick={() => setMobileOpen(false)} className="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-colors" style={{ color: textColor }}>
                       <span>{icon}</span>
                       <div>
                         <p className="text-sm font-semibold">{label}</p>
@@ -289,12 +319,12 @@ export function Navbar() {
                 </div>
 
                 <a
-                  href="#contact"
+                  href={isSubPage ? "/#contact" : "#contact"}
                   onClick={() => setMobileOpen(false)}
                   className="mt-1 px-4 py-3 rounded-xl text-sm font-semibold text-center"
                   style={{ background: ctaBg, color: ctaText }}
                 >
-                  Start Your Project
+                  {t.nav.startProject}
                 </a>
               </div>
             </motion.div>
