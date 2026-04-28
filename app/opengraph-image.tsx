@@ -80,7 +80,7 @@ export default async function OGImage() {
 
           {/* URL */}
           <span style={{ fontSize: "15px", color: "rgba(255,255,255,0.28)", letterSpacing: "0.05em" }}>
-            dev-thierry.vercel.app
+            devthierry.com
           </span>
         </div>
       </div>

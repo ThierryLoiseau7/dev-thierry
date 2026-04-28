@@ -20,7 +20,7 @@ const workSans = Work_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://dev-thierry.vercel.app"),
+  metadataBase: new URL("https://devthierry.com"),
   title: "Dev Thierry — Full-Stack Developer & AI Agent Dev",
   description:
     "Senior developer with 7 years of experience in Web Development, Web3, and AI Agent architecture. Building for the web, on-chain, and beyond.",
@@ -33,14 +33,19 @@ export const metadata: Metadata = {
     "TypeScript",
     "Solidity",
     "Claude API",
+    "développeur freelance",
+    "blockchain developer",
   ],
   authors: [{ name: "Dev Thierry", url: "mailto:devthierry@pm.me" }],
+  alternates: {
+    canonical: "https://devthierry.com",
+  },
   openGraph: {
     title: "Dev Thierry — Full-Stack Developer & AI Agent Dev",
     description:
       "7 years building for the web. From full-stack SaaS to DeFi protocols to autonomous AI agents.",
     type: "website",
-    url: "https://dev-thierry.vercel.app",
+    url: "https://devthierry.com",
     siteName: "Dev Thierry",
   },
   twitter: {
@@ -49,6 +54,32 @@ export const metadata: Metadata = {
     description:
       "7 years building for the web. From full-stack SaaS to DeFi protocols to autonomous AI agents.",
   },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://devthierry.com/#person",
+      name: "Dev Thierry",
+      url: "https://devthierry.com",
+      email: "devthierry@pm.me",
+      telephone: "+33646899310",
+      jobTitle: "Full-Stack Developer & AI Agent Developer",
+      description:
+        "Senior developer with 7 years of experience in Web Development, Web3, and AI Agent architecture.",
+      knowsAbout: ["TypeScript", "Next.js", "Web3", "Solidity", "AI Agents", "DeFi", "Blockchain"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://devthierry.com/#website",
+      url: "https://devthierry.com",
+      name: "Dev Thierry",
+      description: "Portfolio & formations de Dev Thierry — Web Dev · Web3 · AI Agent",
+      author: { "@id": "https://devthierry.com/#person" },
+    },
+  ],
 };
 
 export default async function RootLayout({
@@ -62,6 +93,13 @@ export default async function RootLayout({
   return (
     <html lang={lang}>
       <body className={`${jakarta.variable} ${workSans.variable} antialiased bg-[#f5f5f0]`}>
+        {/* Structured data — helps Google understand who Dev Thierry is */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        {/* Disable browser scroll restoration so the page always starts at the top */}
+        <script dangerouslySetInnerHTML={{ __html: "history.scrollRestoration='manual';window.scrollTo(0,0);" }} />
         <LangProvider initialLang={lang}>
           {children}
         </LangProvider>

@@ -1,7 +1,8 @@
 import { analyzeToken, TokenAnalysis } from "@/lib/analyzeToken";
 
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
-const TOOL_URL = "https://dev-thierry.vercel.app/rugcheck";
+const WEBHOOK_SECRET = process.env.TELEGRAM_WEBHOOK_SECRET ?? "";
+const TOOL_URL = "https://devthierry.com/rugcheck";
 const COMMUNITY_URL = "https://t.me/ayiticoin";
 
 const ANALYZE_BUTTON = {
@@ -108,6 +109,14 @@ function isContractAddress(text: string): boolean {
 
 export async function POST(request: Request) {
   try {
+    // Verify Telegram webhook secret token
+    if (WEBHOOK_SECRET) {
+      const incomingSecret = request.headers.get("x-telegram-bot-api-secret-token") ?? "";
+      if (incomingSecret !== WEBHOOK_SECRET) {
+        return Response.json({ ok: false }, { status: 401 });
+      }
+    }
+
     const update = await request.json();
 
     // Handle button clicks

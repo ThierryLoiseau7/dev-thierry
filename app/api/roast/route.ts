@@ -129,6 +129,29 @@ export async function POST(request: Request) {
       return new Response("Invalid URL", { status: 400 });
     }
 
+    // Block non-web protocols
+    if (!["http:", "https:"].includes(parsedUrl.protocol)) {
+      return new Response("Invalid URL", { status: 400 });
+    }
+
+    // SSRF protection — block private/internal hosts
+    const hostname = parsedUrl.hostname.toLowerCase();
+    const privateHostPatterns = [
+      /^localhost$/,
+      /^127\./,
+      /^0\.0\.0\.0$/,
+      /^::1$/,
+      /^10\./,
+      /^172\.(1[6-9]|2\d|3[01])\./,
+      /^192\.168\./,
+      /^169\.254\./,   // link-local + AWS/GCP/Azure metadata
+      /^100\.(6[4-9]|[7-9]\d|1([01]\d|2[0-7]))\./,  // CGNAT
+      /^fd[0-9a-f]{2}:/i,  // IPv6 private
+    ];
+    if (privateHostPatterns.some((p) => p.test(hostname))) {
+      return new Response("Invalid URL", { status: 400 });
+    }
+
     // Fetch the page
     let html = "";
     try {

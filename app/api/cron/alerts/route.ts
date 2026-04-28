@@ -1,7 +1,7 @@
 const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN!;
 const CHANNEL = "@ayiticoin";
 const CRON_SECRET = process.env.CRON_SECRET ?? "";
-const TOOL_URL = "https://dev-thierry.vercel.app/rugcheck";
+const TOOL_URL = "https://devthierry.com/rugcheck";
 
 // Alert thresholds
 const THRESHOLD_EXTREME_24H = 100;  // +100% en 24h
@@ -187,6 +187,6 @@ export async function GET(request: Request) {
     });
   } catch (err) {
     console.error("Cron alert error:", err);
-    return Response.json({ ok: false, error: String(err) }, { status: 500 });
+    return Response.json({ ok: false, error: "Internal server error" }, { status: 500 });
   }
 }

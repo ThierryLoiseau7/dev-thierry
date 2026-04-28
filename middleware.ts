@@ -18,19 +18,20 @@ const COUNTRY_TO_LANG: Record<string, Lang> = {
   SV: "es", NI: "es", CR: "es", PA: "es", PR: "es", GQ: "es",
 };
 
+const IS_PROD = process.env.NODE_ENV === "production";
+
 export function middleware(request: NextRequest) {
   const response = NextResponse.next();
 
   // Only auto-detect if user has not manually chosen a language
   if (!request.cookies.get("lang")) {
-    const country =
-      request.headers.get("x-vercel-ip-country") ||
-      "";
+    const country = request.headers.get("x-vercel-ip-country") ?? "";
     const lang: Lang = COUNTRY_TO_LANG[country] ?? "en";
     response.cookies.set("lang", lang, {
       path: "/",
       maxAge: 60 * 60 * 24 * 365,
       sameSite: "lax",
+      secure: IS_PROD,
     });
   }
 

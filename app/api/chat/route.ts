@@ -20,7 +20,10 @@ export async function POST(request: Request) {
       return new Response("Invalid messages", { status: 400 });
     }
 
-    const trimmed = messages.slice(-20).filter((m) => m.content?.trim());
+    const ALLOWED_ROLES = new Set(["user", "assistant"]);
+    const trimmed = messages
+      .slice(-20)
+      .filter((m) => m.content?.trim() && ALLOWED_ROLES.has(m.role));
 
     const stream = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",

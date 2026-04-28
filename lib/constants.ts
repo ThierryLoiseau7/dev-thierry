@@ -123,7 +123,7 @@ export const PROJECTS: Project[] = [
     category: "web3",
     tags: ["Next.js", "DexScreener API", "GoPlus Security", "Telegram Bot"],
     featured: true,
-    liveUrl: "https://dev-thierry.vercel.app/rugcheck",
+    liveUrl: "https://devthierry.com/rugcheck",
   },
 ];
 

@@ -453,7 +453,7 @@ export default function RugCheckPage() {
               <div className="flex flex-col sm:flex-row gap-3">
                 {/* Share on Telegram */}
                 <a
-                  href={`https://t.me/share/url?url=${encodeURIComponent("https://dev-thierry.vercel.app/rugcheck")}&text=${encodeURIComponent(
+                  href={`https://t.me/share/url?url=${encodeURIComponent("https://devthierry.com/rugcheck")}&text=${encodeURIComponent(
                     `🔍 Rug Check — ${result.token.name} ($${result.token.symbol})\nScore: ${result.security.score}/100 ${result.security.verdict === "SAFE" ? "✅" : result.security.verdict === "RISKY" ? "⚠️" : "🚨"} ${result.security.verdict}\nMarket Cap: ${result.market.marketCap ? `$${(result.market.marketCap / 1_000_000).toFixed(2)}M` : "—"} | Liquidity: ${result.market.liquidity ? `$${(result.market.liquidity / 1_000).toFixed(0)}K` : "—"}\n\n🇭🇹 Communauté crypto haïtienne: @ayiticoin`
                   )}`}
                   target="_blank"

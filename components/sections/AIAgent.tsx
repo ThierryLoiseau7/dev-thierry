@@ -15,6 +15,7 @@ export function AIAgent() {
   const [mounted, setMounted] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isMounted = useRef(false);
 
   // Read count from localStorage after mount
   useEffect(() => {
@@ -24,8 +25,12 @@ export function AIAgent() {
     if (saved >= MAX_QUESTIONS) setLimitReached(true);
   }, []);
 
-  // Auto-scroll on new messages
+  // Auto-scroll on new messages only — skip the first render
   useEffect(() => {
+    if (!isMounted.current) {
+      isMounted.current = true;
+      return;
+    }
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isLoading]);
 

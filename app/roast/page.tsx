@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
-const SHARE_URL = "dev-thierry.vercel.app/roast";
+const SHARE_URL = "devthierry.com/roast";
 
 function ResultLine({ line }: { line: string }) {
   if (line.startsWith("## Overall Verdict")) {
