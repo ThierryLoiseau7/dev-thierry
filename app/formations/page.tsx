@@ -203,7 +203,7 @@ export default function FormationsPage() {
           PRICING
       ═══════════════════════════════════════════════════ */}
       <section className="py-20 bg-[#eaeae4]">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-3xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -219,118 +219,125 @@ export default function FormationsPage() {
             </h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-5 items-start max-w-2xl mx-auto">
-            {MEMBERSHIP_PLANS.map((plan, i) => (
-              <motion.div
-                key={plan.id}
-                initial={{ opacity: 0, y: 28 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className={plan.highlight ? "md:-mt-5" : ""}
+          <div className="grid md:grid-cols-2 gap-5 items-stretch">
+
+            {/* Plan GRATUIT */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4 }}
+            >
+              <div
+                className="bg-white rounded-xl h-full flex flex-col overflow-hidden"
+                style={{ border: "1px solid #e0e0da", boxShadow: "0 2px 12px rgba(0,0,0,0.07)" }}
               >
-                <div
-                  className="rounded-3xl p-7 flex flex-col relative overflow-hidden"
-                  style={
-                    plan.highlight
-                      ? { background: "#1a1a1a", boxShadow: "0 20px 60px rgba(0,0,0,0.22)" }
-                      : {
-                          background: "white",
-                          border: "1px solid rgba(0,0,0,0.07)",
-                          boxShadow: "0 2px 16px rgba(0,0,0,0.05)",
-                        }
-                  }
-                >
-                  {plan.highlight && (
-                    <>
-                      <div className="absolute -top-12 -right-12 w-52 h-52 rounded-full blur-3xl opacity-25 pointer-events-none" style={{ background: "radial-gradient(circle, #00d4ff, transparent)" }} />
-                      <div className="absolute -bottom-12 -left-12 w-44 h-44 rounded-full blur-3xl opacity-18 pointer-events-none" style={{ background: "radial-gradient(circle, #7c3aed, transparent)" }} />
-                    </>
-                  )}
-                  <div className="relative z-10 flex flex-col h-full">
-                    <div className="flex items-center justify-between mb-5">
-                      <span className={`text-[10px] font-black tracking-[0.2em] uppercase ${plan.highlight ? "text-[#00d4ff]" : "text-[#888]"}`}>
-                        {plan.name}
-                      </span>
-                      {plan.isLifetime && (
-                        <span className="text-[9px] font-black tracking-widest uppercase px-2.5 py-1 rounded-full" style={{ background: "rgba(0,212,255,0.1)", color: "#00c4ef", border: "1px solid rgba(0,212,255,0.22)" }}>
-                          Meilleure valeur
-                        </span>
-                      )}
-                    </div>
-                    <div className="mb-1">
-                      {plan.priceMonthly === 0 ? (
-                        <span className={`text-4xl font-black ${plan.highlight ? "text-white" : "text-[#1a1a1a]"}`}>Gratuit</span>
-                      ) : plan.isLifetime ? (
-                        <>
-                          <span className={`text-4xl font-black ${plan.highlight ? "text-white" : "text-[#1a1a1a]"}`}>${plan.priceMonthly}</span>
-                          <span className={`text-base ml-1 ${plan.highlight ? "text-[rgba(255,255,255,0.4)]" : "text-[#aaa]"}`}>a vie</span>
-                        </>
-                      ) : (
-                        <>
-                          <span className={`text-4xl font-black ${plan.highlight ? "text-white" : "text-[#1a1a1a]"}`}>${plan.priceMonthly}</span>
-                          <span className={`text-base ml-1 ${plan.highlight ? "text-[rgba(255,255,255,0.4)]" : "text-[#aaa]"}`}>/mois</span>
-                        </>
-                      )}
-                    </div>
-                    <p className={`text-xs mb-1 ${plan.highlight ? "text-[rgba(255,255,255,0.35)]" : "text-[#aaa]"}`}>
-                      {plan.isLifetime ? "Paiement unique · formations actuelles + futures" : plan.billedAnnually ? `Facture $${plan.billedAnnually}/an` : "Sans engagement"}
-                    </p>
-                    <p className={`text-sm mb-6 ${plan.highlight ? "text-[rgba(255,255,255,0.55)]" : "text-[#666]"}`}>
-                      {plan.tagline}
-                    </p>
-                    <div className={`h-px mb-5 ${plan.highlight ? "bg-[rgba(255,255,255,0.07)]" : "bg-[rgba(0,0,0,0.06)]"}`} />
-                    <ul className="space-y-2.5 mb-7 flex-1">
-                      {plan.features.map((f) => (
-                        <li key={f.text} className="flex items-center gap-2.5">
-                          <div
-                            className="w-4 h-4 rounded-full flex items-center justify-center shrink-0"
-                            style={f.included
-                              ? plan.highlight
-                                ? { background: "rgba(0,212,255,0.12)", border: "1px solid rgba(0,212,255,0.25)" }
-                                : { background: "rgba(26,26,26,0.07)", border: "1px solid rgba(26,26,26,0.12)" }
-                              : { background: "transparent" }}
-                          >
-                            {f.included ? (
-                              <svg className="w-2.5 h-2.5" fill="none" stroke={plan.highlight ? "#00d4ff" : "#1a1a1a"} viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                              </svg>
-                            ) : (
-                              <svg className="w-2.5 h-2.5" fill="none" stroke="#ccc" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                              </svg>
-                            )}
-                          </div>
-                          <span className={`text-sm ${f.included ? (plan.highlight ? "text-[rgba(255,255,255,0.78)]" : "text-[#444]") : "text-[#bbb]"}`}>
-                            {f.text}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                    {plan.id === "gratuit" ? (
-                      <a href="#catalog" className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200" style={{ border: "1px solid rgba(0,0,0,0.14)", color: "#666" }}>
-                        {plan.cta}
-                      </a>
-                    ) : plan.highlight ? (
-                      <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:opacity-90" style={{ background: "linear-gradient(135deg, #00d4ff, #7c3aed)" }}>
-                        {plan.cta}
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                      </a>
-                    ) : (
-                      <a href={TELEGRAM_URL} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200 hover:opacity-80" style={{ background: "rgba(124,58,237,0.07)", color: "#7c3aed", border: "1px solid rgba(124,58,237,0.18)" }}>
-                        {plan.cta}
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
-                      </a>
-                    )}
-                    {plan.id !== "gratuit" && (
-                      <p className={`text-center text-[10px] mt-3 ${plan.highlight ? "text-[rgba(255,255,255,0.25)]" : "text-[#bbb]"}`}>
-                        Paiement par contact direct · reponse &lt;24h
-                      </p>
-                    )}
+                <div className="h-1 bg-[#1a1a1a]" />
+                <div className="p-6 flex flex-col h-full">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[11px] font-semibold tracking-widest uppercase text-[#666]">GRATUIT</span>
                   </div>
+                  <h3 className="font-heading font-bold text-[#1a1a1a] text-lg mb-1">Decouvre la plateforme</h3>
+                  <p className="text-[#888] text-sm mb-5">Sans engagement · acces immediat</p>
+                  <div className="border-t border-[#ebebeb] mb-5" />
+                  <ul className="space-y-2.5 flex-1 mb-6">
+                    {MEMBERSHIP_PLANS[0].features.map((f) => (
+                      <li key={f.text} className="flex items-start gap-2.5">
+                        <svg
+                          className="w-4 h-4 mt-0.5 shrink-0"
+                          style={{ color: f.included ? "#16a34a" : "#d1d5db" }}
+                          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        >
+                          {f.included
+                            ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                            : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                          }
+                        </svg>
+                        <span className={`text-sm ${f.included ? "text-[#444]" : "text-[#bbb]"}`}>{f.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="border-t border-[#ebebeb] mb-5" />
+                  <div className="mb-5">
+                    <span className="text-3xl font-bold text-[#1a1a1a]">Gratuit</span>
+                  </div>
+                  <a
+                    href="#catalog"
+                    className="flex items-center justify-center w-full py-3.5 rounded-lg text-sm font-semibold text-[#444] transition-opacity duration-200 hover:opacity-75"
+                    style={{ border: "1.5px solid #d0d0ca" }}
+                  >
+                    Commencer gratuitement
+                  </a>
                 </div>
-              </motion.div>
-            ))}
+              </div>
+            </motion.div>
+
+            {/* Plan a Vie */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <div
+                className="bg-white rounded-xl h-full flex flex-col overflow-hidden"
+                style={{ border: "2px solid #7c3aed", boxShadow: "0 2px 20px rgba(124,58,237,0.12)" }}
+              >
+                <div className="bg-[#7c3aed] px-5 py-2.5 flex items-center justify-between rounded-t-[10px]">
+                  <span className="text-white text-[11px] font-bold tracking-widest uppercase">PLAN A VIE</span>
+                  <span className="text-[rgba(255,255,255,0.75)] text-[11px]">⭐ Meilleure valeur</span>
+                </div>
+                <div className="p-6 flex flex-col h-full">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[11px] font-semibold tracking-widest uppercase text-[#7c3aed]">ACCES ILLIMITE</span>
+                    <span className="text-[11px] font-bold px-2.5 py-1 rounded text-white" style={{ background: "#e11d48" }}>
+                      43% OFF
+                    </span>
+                  </div>
+                  <h3 className="font-heading font-bold text-[#1a1a1a] text-lg mb-1">
+                    Tout ce qui est la et tout ce qui arrive
+                  </h3>
+                  <p className="text-[#888] text-sm mb-5">Formations actuelles + futures · a vie</p>
+                  <div className="border-t border-[#ebebeb] mb-5" />
+                  <ul className="space-y-2.5 flex-1 mb-6">
+                    {MEMBERSHIP_PLANS[1].features.map((f) => (
+                      <li key={f.text} className="flex items-start gap-2.5">
+                        <svg
+                          className="w-4 h-4 mt-0.5 shrink-0"
+                          style={{ color: "#7c3aed" }}
+                          fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span className="text-sm text-[#444]">{f.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="border-t border-[#ebebeb] mb-5" />
+                  <div className="flex items-baseline gap-3 mb-1">
+                    <span className="text-3xl font-bold text-[#1a1a1a]">$2,000</span>
+                    <span className="text-base text-[#aaa] line-through">$3,500</span>
+                  </div>
+                  <p className="text-xs text-[#aaa] mb-5">Paiement unique · acces immediat apres confirmation</p>
+                  <a
+                    href={TELEGRAM_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-lg text-sm font-semibold text-white transition-opacity duration-200 hover:opacity-85"
+                    style={{ background: "#7c3aed" }}
+                  >
+                    Obtenir l&apos;acces a vie
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                  </a>
+                  <p className="text-center text-[#bbb] text-[11px] mt-3">
+                    Paiement par contact direct · reponse &lt;24h
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
           </div>
 
           <motion.p
