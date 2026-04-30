@@ -101,141 +101,137 @@ export function Formations() {
 
           {/* LEFT: Crypto Experience Package */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4 }}
           >
-            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden h-full flex flex-col" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
-              {/* Accent strip */}
-              <div className="h-1 bg-[#00d4ff]" />
-
-              <div className="p-8 flex flex-col h-full">
-                {/* Label + tag */}
-                <div className="flex items-center justify-between mb-5">
-                  <span className="text-[11px] font-semibold tracking-widest uppercase text-[#00d4ff]">
+            <div
+              className="bg-white rounded-xl h-full flex flex-col"
+              style={{ border: "1px solid #e0e0da", boxShadow: "0 2px 12px rgba(0,0,0,0.08)" }}
+            >
+              {/* Card header */}
+              <div className="px-6 pt-6 pb-5 border-b border-[#ebebeb]">
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <span className="text-[11px] font-semibold tracking-widest uppercase text-[#666]">
                     {f.cryptoLabel}
                   </span>
-                  <span className="text-[10px] font-medium tracking-widest uppercase text-[rgba(255,255,255,0.35)]">
-                    {f.cryptoTag}
+                  <span
+                    className="text-[11px] font-bold px-2.5 py-1 rounded text-white shrink-0"
+                    style={{ background: "#e11d48" }}
+                  >
+                    38% OFF
                   </span>
                 </div>
-
-                {/* Title */}
-                <h3 className="font-heading font-bold text-white text-xl leading-tight mb-2">
+                <h3 className="font-heading font-bold text-[#1a1a1a] text-lg leading-snug mb-1">
                   {f.cryptoTitle}
                 </h3>
-                <p className="text-[rgba(255,255,255,0.45)] text-sm leading-relaxed mb-6">
-                  {f.cryptoDesc}
-                </p>
+                <p className="text-[#888] text-sm leading-relaxed">{f.cryptoDesc}</p>
+              </div>
 
-                {/* Topics */}
-                <div className="space-y-2.5 mb-6 flex-1">
+              {/* Features */}
+              <div className="px-6 py-5 flex-1">
+                <div className="space-y-3">
                   {f.cryptoTopics.map((item) => (
-                    <div key={item} className="flex items-start gap-3">
-                      <svg className="w-4 h-4 mt-0.5 shrink-0 text-[#00d4ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div key={item} className="flex items-start gap-2.5">
+                      <svg className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#16a34a" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                       </svg>
-                      <span className="text-sm text-[rgba(255,255,255,0.65)]">{item}</span>
+                      <span className="text-sm text-[#444]">{item}</span>
                     </div>
                   ))}
                 </div>
+                <p className="text-[11px] text-[#aaa] leading-relaxed mt-5">{f.cryptoDisclaimer}</p>
+              </div>
 
-                {/* Disclaimer */}
-                <p className="text-[10px] leading-relaxed mb-6 text-[rgba(255,255,255,0.3)]">
-                  {f.cryptoDisclaimer}
-                </p>
-
-                {/* Divider */}
-                <div className="border-t border-[rgba(255,255,255,0.08)] mb-6" />
-
-                {/* Price + CTA */}
-                <div className="mt-auto">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <span className="text-4xl font-bold text-white">{f.cryptoPrice}</span>
-                    <span className="text-sm text-[rgba(255,255,255,0.4)]">{f.cryptoPriceSub}</span>
-                  </div>
-                  <p className="text-[rgba(255,255,255,0.3)] text-xs mb-5">{f.cryptoPriceDesc}</p>
-                  <a
-                    href="https://t.me/haiticoin7"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-lg text-sm font-semibold text-[#0f0f13] transition-opacity duration-200 hover:opacity-85"
-                    style={{ background: "#00d4ff" }}
-                  >
-                    {f.cryptoCta}
-                    {ARROW_ICON}
-                  </a>
-                  <p className="text-center text-[rgba(255,255,255,0.2)] text-[11px] mt-3">
-                    {f.payNote}
-                  </p>
+              {/* Price + CTA */}
+              <div className="px-6 pb-6 border-t border-[#ebebeb] pt-5">
+                <div className="flex items-baseline gap-3 mb-1">
+                  <span className="text-3xl font-bold text-[#1a1a1a]">{f.cryptoPrice}</span>
+                  <span className="text-base text-[#aaa] line-through">$8,000</span>
                 </div>
+                <p className="text-xs text-[#aaa] mb-4">{f.cryptoPriceDesc}</p>
+                <a
+                  href="https://t.me/haiticoin7"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 rounded-lg text-sm font-semibold text-white transition-opacity duration-200 hover:opacity-85"
+                  style={{ background: "#1a1a1a" }}
+                >
+                  {f.cryptoCta}
+                  {ARROW_ICON}
+                </a>
+                <p className="text-center text-[#bbb] text-[11px] mt-3">{f.payNote}</p>
               </div>
             </div>
           </motion.div>
 
           {/* RIGHT: Plan à Vie */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden h-full flex flex-col" style={{ border: "1px solid rgba(124,58,237,0.5)" }}>
-              {/* Accent strip */}
-              <div className="h-1 bg-[#7c3aed]" />
+            <div
+              className="bg-white rounded-xl h-full flex flex-col"
+              style={{ border: "2px solid #7c3aed", boxShadow: "0 2px 20px rgba(124,58,237,0.12)" }}
+            >
+              {/* Popular badge */}
+              <div className="bg-[#7c3aed] px-6 py-2.5 flex items-center justify-between rounded-t-[10px]">
+                <span className="text-white text-[11px] font-bold tracking-widest uppercase">{f.planTag}</span>
+                <span className="text-[rgba(255,255,255,0.7)] text-[11px]">⭐ {f.planLabel}</span>
+              </div>
 
-              <div className="p-8 flex flex-col h-full">
-                {/* Label + tag */}
-                <div className="flex items-center justify-between mb-5">
-                  <span className="text-[11px] font-semibold tracking-widest uppercase text-[#7c3aed]">
-                    {f.planLabel}
+              {/* Card header */}
+              <div className="px-6 pt-5 pb-5 border-b border-[#ebebeb]">
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <span className="text-[11px] font-semibold tracking-widest uppercase text-[#666]">
+                    Plan à Vie
                   </span>
-                  <span className="text-[10px] font-medium tracking-widest uppercase px-2.5 py-1 rounded bg-[#7c3aed] text-white">
-                    {f.planTag}
+                  <span
+                    className="text-[11px] font-bold px-2.5 py-1 rounded text-white shrink-0"
+                    style={{ background: "#e11d48" }}
+                  >
+                    43% OFF
                   </span>
                 </div>
-
-                {/* Title + desc */}
-                <h3 className="font-heading font-bold text-white text-xl leading-tight mb-2">
+                <h3 className="font-heading font-bold text-[#1a1a1a] text-lg leading-snug mb-1">
                   Plan à Vie
                 </h3>
-                <p className="text-[rgba(255,255,255,0.45)] text-sm leading-relaxed mb-6">
-                  {f.planDesc}
-                </p>
+                <p className="text-[#888] text-sm leading-relaxed">{f.planDesc}</p>
+              </div>
 
-                {/* Features */}
-                <div className="space-y-2.5 mb-6 flex-1">
+              {/* Features */}
+              <div className="px-6 py-5 flex-1">
+                <div className="space-y-3">
                   {f.planFeatures.map((feat) => (
-                    <div key={feat} className="flex items-start gap-3">
-                      <svg className="w-4 h-4 mt-0.5 shrink-0 text-[#7c3aed]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div key={feat} className="flex items-start gap-2.5">
+                      <svg className="w-4 h-4 mt-0.5 shrink-0" style={{ color: "#16a34a" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                       </svg>
-                      <span className="text-sm text-[rgba(255,255,255,0.65)]">{feat}</span>
+                      <span className="text-sm text-[#444]">{feat}</span>
                     </div>
                   ))}
                 </div>
+              </div>
 
-                {/* Divider */}
-                <div className="border-t border-[rgba(255,255,255,0.08)] mb-6" />
-
-                {/* Price + CTA */}
-                <div className="mt-auto">
-                  <div className="flex items-baseline gap-2 mb-5">
-                    <span className="text-4xl font-bold text-white">$2000</span>
-                  </div>
-                  <a
-                    href="/formations"
-                    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-lg text-sm font-semibold text-white transition-opacity duration-200 hover:opacity-85"
-                    style={{ background: "#7c3aed" }}
-                  >
-                    {f.planCta}
-                    {ARROW_ICON}
-                  </a>
-                  <p className="text-center text-[rgba(255,255,255,0.2)] text-[11px] mt-3">
-                    {f.planPayNote}
-                  </p>
+              {/* Price + CTA */}
+              <div className="px-6 pb-6 border-t border-[#ebebeb] pt-5">
+                <div className="flex items-baseline gap-3 mb-1">
+                  <span className="text-3xl font-bold text-[#1a1a1a]">$2,000</span>
+                  <span className="text-base text-[#aaa] line-through">$3,500</span>
                 </div>
+                <p className="text-xs text-[#aaa] mb-4">{f.cryptoPriceDesc}</p>
+                <a
+                  href="/formations"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 rounded-lg text-sm font-semibold text-white transition-opacity duration-200 hover:opacity-85"
+                  style={{ background: "#7c3aed" }}
+                >
+                  {f.planCta}
+                  {ARROW_ICON}
+                </a>
+                <p className="text-center text-[#bbb] text-[11px] mt-3">{f.planPayNote}</p>
               </div>
             </div>
           </motion.div>
