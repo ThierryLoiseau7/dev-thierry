@@ -14,6 +14,7 @@ const LANG_OPTIONS: { value: Lang; flag: string; label: string }[] = [
 ];
 
 const TOOLS = [
+  { href: "/demo", icon: "🏢", label: "Ops Portal Demo", desc: "Architecture prototype — agency client dashboard" },
   { href: "/roast", icon: "🔥", label: "Roast My Website", desc: "Feedback brutal sur ton site — gratuit" },
   { href: "/audit", icon: "🛡️", label: "Contract Audit", desc: "Analyse de sécurité Solidity — gratuit" },
   { href: "/rugcheck", icon: "🔍", label: "Rug Pull Detector", desc: "Scan memecoin — market cap, liquidité, sécurité" },
