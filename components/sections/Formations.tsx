@@ -6,12 +6,6 @@ import { FORMATIONS } from "@/lib/constants";
 import { useLang } from "@/lib/i18n/context";
 
 
-const CHECK_ICON = (
-  <svg className="w-3 h-3" fill="none" stroke="#00d4ff" viewBox="0 0 24 24">
-    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
-  </svg>
-);
-
 const ARROW_ICON = (
   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
@@ -105,94 +99,74 @@ export function Formations() {
         {/* Two cards: Crypto Experience (left) + Plan à Vie (right) */}
         <div className="grid lg:grid-cols-2 gap-6 items-stretch">
 
-          {/* LEFT: Crypto Experience Package — même style dark */}
+          {/* LEFT: Crypto Experience Package */}
           <motion.div
-            initial={{ opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.4 }}
           >
-            <div className="relative bg-[#1a1a1a] rounded-3xl p-8 overflow-hidden h-full flex flex-col">
-              <div
-                className="absolute -top-10 -right-10 w-48 h-48 rounded-full blur-3xl pointer-events-none"
-                style={{ background: "radial-gradient(circle, rgba(0,212,255,0.2), transparent)" }}
-              />
-              <div
-                className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full blur-3xl pointer-events-none"
-                style={{ background: "radial-gradient(circle, rgba(124,58,237,0.18), transparent)" }}
-              />
+            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden h-full flex flex-col" style={{ border: "1px solid rgba(255,255,255,0.1)" }}>
+              {/* Accent strip */}
+              <div className="h-1 bg-[#00d4ff]" />
 
-              <div className="relative z-10 flex flex-col h-full">
-                {/* Badges */}
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-[11px] font-black tracking-[0.2em] uppercase px-3 py-1.5 rounded-full text-[#00d4ff] border border-[rgba(0,212,255,0.3)] bg-[rgba(0,212,255,0.08)]">
+              <div className="p-8 flex flex-col h-full">
+                {/* Label + tag */}
+                <div className="flex items-center justify-between mb-5">
+                  <span className="text-[11px] font-semibold tracking-widest uppercase text-[#00d4ff]">
                     {f.cryptoLabel}
                   </span>
-                  <span className="text-[10px] font-bold tracking-widest uppercase text-[rgba(255,255,255,0.4)] bg-[rgba(255,255,255,0.06)] px-3 py-1.5 rounded-full border border-[rgba(255,255,255,0.08)]">
+                  <span className="text-[10px] font-medium tracking-widest uppercase text-[rgba(255,255,255,0.35)]">
                     {f.cryptoTag}
                   </span>
                 </div>
 
-                {/* Icon + Title */}
-                <div className="flex items-center gap-3 mb-3">
-                  <div
-                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shrink-0"
-                    style={{ background: "rgba(0,212,255,0.1)", border: "1px solid rgba(0,212,255,0.2)" }}
-                  >
-                    ₿
-                  </div>
-                  <h3 className="font-heading font-black text-white text-xl leading-tight">
-                    {f.cryptoTitle.split(" ").slice(0, -1).join(" ")}<br />{f.cryptoTitle.split(" ").slice(-1)}
-                  </h3>
-                </div>
-
-                <p className="text-[rgba(255,255,255,0.5)] text-sm leading-relaxed mb-6">
+                {/* Title */}
+                <h3 className="font-heading font-bold text-white text-xl leading-tight mb-2">
+                  {f.cryptoTitle}
+                </h3>
+                <p className="text-[rgba(255,255,255,0.45)] text-sm leading-relaxed mb-6">
                   {f.cryptoDesc}
                 </p>
 
                 {/* Topics */}
                 <div className="space-y-2.5 mb-6 flex-1">
                   {f.cryptoTopics.map((item) => (
-                    <div key={item} className="flex items-center gap-3">
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-                        style={{ background: "rgba(0,212,255,0.12)", border: "1px solid rgba(0,212,255,0.28)" }}
-                      >
-                        {CHECK_ICON}
-                      </div>
-                      <span className="text-sm text-[rgba(255,255,255,0.72)]">{item}</span>
+                    <div key={item} className="flex items-start gap-3">
+                      <svg className="w-4 h-4 mt-0.5 shrink-0 text-[#00d4ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-sm text-[rgba(255,255,255,0.65)]">{item}</span>
                     </div>
                   ))}
                 </div>
 
                 {/* Disclaimer */}
-                <p
-                  className="text-[10px] leading-relaxed mb-5 px-3 py-2 rounded-xl"
-                  style={{ background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.08)" }}
-                >
+                <p className="text-[10px] leading-relaxed mb-6 text-[rgba(255,255,255,0.3)]">
                   {f.cryptoDisclaimer}
                 </p>
 
+                {/* Divider */}
+                <div className="border-t border-[rgba(255,255,255,0.08)] mb-6" />
+
                 {/* Price + CTA */}
                 <div className="mt-auto">
-                  <div className="mb-1">
-                    <span className="text-5xl font-black text-white">{f.cryptoPrice}</span>
-                    <span className="text-base text-[rgba(255,255,255,0.4)] ml-1.5">{f.cryptoPriceSub}</span>
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <span className="text-4xl font-bold text-white">{f.cryptoPrice}</span>
+                    <span className="text-sm text-[rgba(255,255,255,0.4)]">{f.cryptoPriceSub}</span>
                   </div>
-                  <p className="text-[rgba(255,255,255,0.35)] text-sm mb-5">
-                    {f.cryptoPriceDesc}
-                  </p>
+                  <p className="text-[rgba(255,255,255,0.3)] text-xs mb-5">{f.cryptoPriceDesc}</p>
                   <a
                     href="https://t.me/haiticoin7"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:opacity-90 hover:shadow-xl"
-                    style={{ background: "linear-gradient(135deg, #00d4ff, #7c3aed)" }}
+                    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-lg text-sm font-semibold text-[#0f0f13] transition-opacity duration-200 hover:opacity-85"
+                    style={{ background: "#00d4ff" }}
                   >
                     {f.cryptoCta}
                     {ARROW_ICON}
                   </a>
-                  <p className="text-center text-[rgba(255,255,255,0.22)] text-[11px] mt-3">
+                  <p className="text-center text-[rgba(255,255,255,0.2)] text-[11px] mt-3">
                     {f.payNote}
                   </p>
                 </div>
@@ -202,62 +176,63 @@ export function Formations() {
 
           {/* RIGHT: Plan à Vie */}
           <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.5, delay: 0.1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
           >
-            <div className="relative bg-[#1a1a1a] rounded-3xl p-8 overflow-hidden h-full flex flex-col">
-              <div
-                className="absolute -top-10 -right-10 w-44 h-44 rounded-full blur-3xl pointer-events-none"
-                style={{ background: "radial-gradient(circle, rgba(0,212,255,0.22), transparent)" }}
-              />
-              <div
-                className="absolute -bottom-10 -left-10 w-36 h-36 rounded-full blur-3xl pointer-events-none"
-                style={{ background: "radial-gradient(circle, rgba(124,58,237,0.18), transparent)" }}
-              />
+            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden h-full flex flex-col" style={{ border: "1px solid rgba(124,58,237,0.5)" }}>
+              {/* Accent strip */}
+              <div className="h-1 bg-[#7c3aed]" />
 
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="flex items-center justify-between mb-6">
-                  <span className="text-[11px] font-black tracking-[0.2em] uppercase px-3 py-1.5 rounded-full text-[#00d4ff] border border-[rgba(0,212,255,0.3)] bg-[rgba(0,212,255,0.08)]">
+              <div className="p-8 flex flex-col h-full">
+                {/* Label + tag */}
+                <div className="flex items-center justify-between mb-5">
+                  <span className="text-[11px] font-semibold tracking-widest uppercase text-[#7c3aed]">
                     {f.planLabel}
                   </span>
-                  <span className="text-[10px] font-bold tracking-widest uppercase text-[rgba(255,255,255,0.4)] bg-[rgba(255,255,255,0.06)] px-3 py-1.5 rounded-full border border-[rgba(255,255,255,0.08)]">
+                  <span className="text-[10px] font-medium tracking-widest uppercase px-2.5 py-1 rounded bg-[#7c3aed] text-white">
                     {f.planTag}
                   </span>
                 </div>
 
-                <div className="mb-1">
-                  <span className="text-5xl font-black text-white">$2000</span>
-                </div>
-                <p className="text-[rgba(255,255,255,0.35)] text-sm mb-7">
+                {/* Title + desc */}
+                <h3 className="font-heading font-bold text-white text-xl leading-tight mb-2">
+                  Plan à Vie
+                </h3>
+                <p className="text-[rgba(255,255,255,0.45)] text-sm leading-relaxed mb-6">
                   {f.planDesc}
                 </p>
 
-                <div className="space-y-3 mb-7 flex-1">
+                {/* Features */}
+                <div className="space-y-2.5 mb-6 flex-1">
                   {f.planFeatures.map((feat) => (
-                    <div key={feat} className="flex items-center gap-3">
-                      <div
-                        className="w-5 h-5 rounded-full flex items-center justify-center shrink-0"
-                        style={{ background: "rgba(0,212,255,0.12)", border: "1px solid rgba(0,212,255,0.28)" }}
-                      >
-                        {CHECK_ICON}
-                      </div>
-                      <span className="text-sm text-[rgba(255,255,255,0.72)]">{feat}</span>
+                    <div key={feat} className="flex items-start gap-3">
+                      <svg className="w-4 h-4 mt-0.5 shrink-0 text-[#7c3aed]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="text-sm text-[rgba(255,255,255,0.65)]">{feat}</span>
                     </div>
                   ))}
                 </div>
 
+                {/* Divider */}
+                <div className="border-t border-[rgba(255,255,255,0.08)] mb-6" />
+
+                {/* Price + CTA */}
                 <div className="mt-auto">
+                  <div className="flex items-baseline gap-2 mb-5">
+                    <span className="text-4xl font-bold text-white">$2000</span>
+                  </div>
                   <a
                     href="/formations"
-                    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-bold text-white transition-all duration-200 hover:opacity-90 hover:shadow-xl"
-                    style={{ background: "linear-gradient(135deg, #00d4ff, #7c3aed)" }}
+                    className="flex items-center justify-center gap-2 w-full py-3.5 rounded-lg text-sm font-semibold text-white transition-opacity duration-200 hover:opacity-85"
+                    style={{ background: "#7c3aed" }}
                   >
                     {f.planCta}
                     {ARROW_ICON}
                   </a>
-                  <p className="text-center text-[rgba(255,255,255,0.22)] text-[11px] mt-3">
+                  <p className="text-center text-[rgba(255,255,255,0.2)] text-[11px] mt-3">
                     {f.planPayNote}
                   </p>
                 </div>
