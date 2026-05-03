@@ -1,39 +1,58 @@
 import OpenAI from "openai";
 
-const AUDIT_SYSTEM_PROMPT = `You are an expert Solidity smart contract security auditor with deep knowledge of EVM vulnerabilities, DeFi attack vectors, and Solidity best practices.
+const SYSTEM_PROMPT = `You are an expert tech consultant. Analyze a client's project description and return a JSON object with this exact structure.
 
-Analyze the provided contract and structure your response exactly as follows:
+IMPORTANT: Detect the language of the client's description and write ALL text values in that same language (French, English, Spanish, Haitian Creole, etc.). Only the JSON keys must stay in English.
 
-## Security Score: X/10
+{
+  "projectType": "Short label (e.g. SaaS Platform, E-commerce, Web3 App, Landing Page, Mobile App, AI Tool, DeFi Protocol)",
+  "complexity": "Simple" | "Medium" | "Complex",
+  "summary": "2 sentences max — what the project is and its goal",
+  "techStack": ["Tech1", "Tech2", "Tech3", ...],
+  "challenges": ["Main technical challenge", "Second challenge", "Third challenge"],
+  "services": [
+    {
+      "id": "webdev",
+      "name": "Web Development",
+      "match": "high" | "medium" | "low" | "none",
+      "reason": "Specific reason why this service applies or doesn't"
+    },
+    {
+      "id": "ai",
+      "name": "AI Integration",
+      "match": "high" | "medium" | "low" | "none",
+      "reason": "Specific reason"
+    },
+    {
+      "id": "blockchain",
+      "name": "Blockchain / Web3",
+      "match": "high" | "medium" | "low" | "none",
+      "reason": "Specific reason"
+    },
+    {
+      "id": "bot",
+      "name": "Telegram Bot / Automation",
+      "match": "high" | "medium" | "low" | "none",
+      "reason": "Specific reason"
+    }
+  ],
+  "timeline": "Estimated timeline (e.g. 1-2 weeks, 3-4 weeks, 2-3 months)",
+  "budget": "Rough budget range in USD (e.g. $500-1,500 / $2,000-5,000 / $5,000+)",
+  "verdict": "One punchy sentence — the most important thing this client needs to know to move forward"
+}
 
-## Summary
-Brief 2-3 sentence overview of the contract and its main security posture.
-
-## Findings
-
-For each issue found, use this format:
-### [SEVERITY] — Title
-**Location:** function or line reference
-**Description:** What the vulnerability is
-**Impact:** What an attacker could do
-
-Severity levels (use exactly one of): CRITICAL, HIGH, MEDIUM, LOW, INFO
-
-## Recommendations
-Numbered list of specific fixes for each finding.
-
-Be concise, accurate, and focus only on real vulnerabilities. Do not invent issues that are not present.`;
+Only return valid JSON. No markdown, no extra text. Be honest and specific — not everything needs all services.`;
 
 export async function POST(request: Request) {
   try {
-    const { code } = await request.json();
+    const { description } = await request.json();
 
-    if (!code?.trim()) {
-      return new Response("No contract code provided", { status: 400 });
+    if (!description?.trim()) {
+      return new Response("No project description provided", { status: 400 });
     }
 
-    if (code.length > 8000) {
-      return new Response("Contract too large (max 8,000 characters)", { status: 400 });
+    if (description.length > 4000) {
+      return new Response("Description too long (max 4,000 characters)", { status: 400 });
     }
 
     const groq = new OpenAI({
@@ -41,38 +60,32 @@ export async function POST(request: Request) {
       baseURL: "https://api.groq.com/openai/v1",
     });
 
-    const stream = await groq.chat.completions.create({
+    const completion = await groq.chat.completions.create({
       model: "llama-3.3-70b-versatile",
-      max_tokens: 1500,
-      stream: true,
+      max_tokens: 1000,
+      response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: AUDIT_SYSTEM_PROMPT },
+        { role: "system", content: SYSTEM_PROMPT },
         {
           role: "user",
-          content: `Audit this Solidity smart contract:\n\n\`\`\`solidity\n${code}\n\`\`\``,
+          content: `Analyze this project:\n\n${description}`,
         },
       ],
     });
 
-    const readable = new ReadableStream({
-      async start(controller) {
-        for await (const chunk of stream) {
-          const text = chunk.choices[0]?.delta?.content ?? "";
-          if (text) controller.enqueue(new TextEncoder().encode(text));
-        }
-        controller.close();
-      },
-    });
+    const json = completion.choices[0]?.message?.content ?? "{}";
 
-    return new Response(readable, {
+    return new Response(json, {
       headers: {
-        "Content-Type": "text/plain; charset=utf-8",
-        "Transfer-Encoding": "chunked",
+        "Content-Type": "application/json; charset=utf-8",
         "X-Content-Type-Options": "nosniff",
       },
     });
   } catch (err) {
-    console.error("Audit API error:", err);
-    return new Response("Audit service unavailable. Please try again.", { status: 500 });
+    console.error("Project analysis API error:", err);
+    return new Response(JSON.stringify({ error: "Analysis service unavailable." }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }

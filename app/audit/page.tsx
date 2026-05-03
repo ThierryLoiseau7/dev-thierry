@@ -1,100 +1,216 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 
-const SAMPLE_CONTRACT = ``;
-
-const SEVERITY: Record<string, { bg: string; text: string }> = {
-  CRITICAL: { bg: "#fee2e2", text: "#dc2626" },
-  HIGH:     { bg: "#ffedd5", text: "#ea580c" },
-  MEDIUM:   { bg: "#fef9c3", text: "#ca8a04" },
-  LOW:      { bg: "#dbeafe", text: "#2563eb" },
-  INFO:     { bg: "#f1f5f9", text: "#64748b" },
-};
-
-function ResultLine({ line, i }: { line: string; i: number }) {
-  // Security Score
-  if (line.startsWith("## Security Score:")) {
-    const score = line.replace("## Security Score:", "").trim();
-    return (
-      <div className="flex items-baseline gap-3 mb-5">
-        <span className="text-[10px] font-black tracking-[0.25em] uppercase text-[#888888]">Security Score</span>
-        <span className="text-4xl font-black text-[#1a1a1a]">{score}</span>
-      </div>
-    );
-  }
-
-  // Section headers ##
-  if (line.startsWith("## ")) {
-    return (
-      <p className="text-[10px] font-black tracking-[0.25em] uppercase text-[#888888] mt-7 mb-2">
-        {line.replace("## ", "")}
-      </p>
-    );
-  }
-
-  // Finding headers ### [SEVERITY] — Title
-  if (line.startsWith("### ")) {
-    const content = line.replace("### ", "");
-    const match = content.match(/^\[(CRITICAL|HIGH|MEDIUM|LOW|INFO)\]/);
-    if (match) {
-      const sev = match[1];
-      const title = content.replace(`[${sev}]`, "").replace(/^[\s—–-]+/, "").trim();
-      const c = SEVERITY[sev];
-      return (
-        <div className="flex items-center gap-2 mt-5 mb-1.5">
-          <span
-            className="text-[10px] font-black tracking-[0.12em] px-2 py-0.5 rounded-md shrink-0"
-            style={{ background: c.bg, color: c.text }}
-          >
-            {sev}
-          </span>
-          <span className="font-bold text-sm text-[#1a1a1a]">{title}</span>
-        </div>
-      );
-    }
-    return <p key={i} className="font-bold text-sm text-[#1a1a1a] mt-4 mb-1">{content}</p>;
-  }
-
-  // Bold text
-  if (line.includes("**")) {
-    const parts = line.split(/(\*\*.*?\*\*)/g);
-    return (
-      <p className="text-sm text-[#555555] leading-relaxed">
-        {parts.map((p, j) =>
-          p.startsWith("**") && p.endsWith("**")
-            ? <strong key={j} className="text-[#1a1a1a] font-semibold">{p.slice(2, -2)}</strong>
-            : p
-        )}
-      </p>
-    );
-  }
-
-  // Numbered / bullet
-  if (/^\d+\. /.test(line) || line.startsWith("- ") || line.startsWith("* ")) {
-    return <p className="text-sm text-[#555555] leading-relaxed pl-1">{line}</p>;
-  }
-
-  // Empty
-  if (!line.trim()) return <div className="h-1" />;
-
-  // Normal
-  return <p className="text-sm text-[#555555] leading-relaxed">{line}</p>;
+interface Service {
+  id: string;
+  name: string;
+  match: "high" | "medium" | "low" | "none";
+  reason: string;
 }
 
-export default function AuditPage() {
-  const [code, setCode] = useState(SAMPLE_CONTRACT);
-  const [result, setResult] = useState("");
+interface AnalysisResult {
+  projectType: string;
+  complexity: "Simple" | "Medium" | "Complex";
+  summary: string;
+  techStack: string[];
+  challenges: string[];
+  services: Service[];
+  timeline: string;
+  budget: string;
+  verdict: string;
+}
+
+const SERVICE_ICONS: Record<string, React.ReactNode> = {
+  webdev: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+    </svg>
+  ),
+  ai: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2" />
+    </svg>
+  ),
+  blockchain: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+    </svg>
+  ),
+  bot: (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+    </svg>
+  ),
+};
+
+const MATCH_CONFIG = {
+  high:   { label: "Essentiel",    bg: "#dcfce7", text: "#16a34a", dot: "#16a34a" },
+  medium: { label: "Recommandé",   bg: "#fef9c3", text: "#ca8a04", dot: "#ca8a04" },
+  low:    { label: "Optionnel",    bg: "#f1f5f9", text: "#64748b", dot: "#94a3b8" },
+  none:   { label: "Non requis",   bg: "#f8f8f8", text: "#bbbbbb", dot: "#dddddd" },
+};
+
+const COMPLEXITY_CONFIG = {
+  Simple:  { bg: "#dcfce7", text: "#16a34a" },
+  Medium:  { bg: "#fef9c3", text: "#ca8a04" },
+  Complex: { bg: "#fee2e2", text: "#dc2626" },
+};
+
+function AnalysisBoard({ result }: { result: AnalysisResult }) {
+  const visibleServices = result.services?.filter((s) => s.match !== "none") ?? [];
+  const complexity = COMPLEXITY_CONFIG[result.complexity] ?? COMPLEXITY_CONFIG.Medium;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="space-y-4"
+    >
+      {/* Project type + complexity + summary */}
+      <div className="rounded-2xl bg-white p-6" style={{ border: "1px solid rgba(26,26,26,0.1)" }}>
+        <div className="flex items-center gap-2 mb-3 flex-wrap">
+          <span className="text-[10px] font-black tracking-[0.2em] uppercase px-2.5 py-1 rounded-full bg-[#1a1a1a] text-white">
+            {result.projectType}
+          </span>
+          <span
+            className="text-[10px] font-black tracking-[0.15em] uppercase px-2.5 py-1 rounded-full"
+            style={{ background: complexity.bg, color: complexity.text }}
+          >
+            {result.complexity}
+          </span>
+        </div>
+        <p className="text-sm text-[#444] leading-relaxed">{result.summary}</p>
+      </div>
+
+      {/* Tech stack */}
+      {result.techStack?.length > 0 && (
+        <div className="rounded-2xl bg-white p-6" style={{ border: "1px solid rgba(26,26,26,0.1)" }}>
+          <p className="text-[9px] font-black tracking-[0.25em] uppercase text-[#999] mb-3">Stack recommandée</p>
+          <div className="flex flex-wrap gap-2">
+            {result.techStack.map((tech, i) => (
+              <span
+                key={i}
+                className="text-xs font-semibold px-3 py-1.5 rounded-xl"
+                style={{ background: "rgba(26,26,26,0.06)", color: "#1a1a1a" }}
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Services match */}
+      {visibleServices.length > 0 && (
+        <div className="rounded-2xl bg-white p-6" style={{ border: "1px solid rgba(26,26,26,0.1)" }}>
+          <p className="text-[9px] font-black tracking-[0.25em] uppercase text-[#999] mb-4">
+            Ce dont tu as besoin
+          </p>
+          <div className="space-y-3">
+            {visibleServices.map((service) => {
+              const m = MATCH_CONFIG[service.match];
+              return (
+                <div
+                  key={service.id}
+                  className="flex items-start gap-4 p-4 rounded-xl"
+                  style={{ background: "rgba(26,26,26,0.025)", border: "1px solid rgba(26,26,26,0.07)" }}
+                >
+                  <div
+                    className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
+                    style={{ background: "rgba(26,26,26,0.08)" }}
+                  >
+                    <span className="text-[#1a1a1a]">{SERVICE_ICONS[service.id]}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="text-sm font-bold text-[#1a1a1a]">{service.name}</p>
+                      <span
+                        className="text-[9px] font-black tracking-[0.12em] uppercase px-2 py-0.5 rounded-full"
+                        style={{ background: m.bg, color: m.text }}
+                      >
+                        {m.label}
+                      </span>
+                    </div>
+                    <p className="text-xs text-[#777] leading-relaxed">{service.reason}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Challenges */}
+      {result.challenges?.length > 0 && (
+        <div className="rounded-2xl bg-white p-6" style={{ border: "1px solid rgba(26,26,26,0.1)" }}>
+          <p className="text-[9px] font-black tracking-[0.25em] uppercase text-[#999] mb-3">Points critiques</p>
+          <ul className="space-y-2">
+            {result.challenges.map((c, i) => (
+              <li key={i} className="flex items-start gap-2.5 text-sm text-[#555] leading-relaxed">
+                <span className="text-[#e4a400] mt-0.5 shrink-0">▲</span>
+                {c}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Timeline + Budget */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid rgba(26,26,26,0.1)" }}>
+          <p className="text-[9px] font-black tracking-[0.25em] uppercase text-[#999] mb-1.5">Timeline</p>
+          <p className="text-lg font-black text-[#1a1a1a]">{result.timeline}</p>
+        </div>
+        <div className="rounded-2xl bg-white p-5" style={{ border: "1px solid rgba(26,26,26,0.1)" }}>
+          <p className="text-[9px] font-black tracking-[0.25em] uppercase text-[#999] mb-1.5">Budget estimé</p>
+          <p className="text-lg font-black text-[#1a1a1a]">{result.budget}</p>
+        </div>
+      </div>
+
+      {/* Verdict */}
+      {result.verdict && (
+        <div
+          className="rounded-2xl p-5"
+          style={{ background: "#1a1a1a" }}
+        >
+          <p className="text-[9px] font-black tracking-[0.25em] uppercase text-white/40 mb-2">Verdict</p>
+          <p className="text-sm font-semibold text-white leading-relaxed">{result.verdict}</p>
+        </div>
+      )}
+
+      {/* CTA */}
+      <Link
+        href="/#contact"
+        className="flex items-center justify-between w-full p-5 rounded-2xl transition-all duration-200 group"
+        style={{ background: "#00d4ff" }}
+      >
+        <div>
+          <p className="font-black text-[#0a0a0a] text-base">Travaillons ensemble</p>
+          <p className="text-[12px] text-[#0a0a0a]/70 mt-0.5">Dev Thierry peut gérer ce projet de A à Z</p>
+        </div>
+        <svg className="w-5 h-5 text-[#0a0a0a] group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+        </svg>
+      </Link>
+    </motion.div>
+  );
+}
+
+export default function ProjectAnalysisPage() {
+  const [description, setDescription] = useState("");
+  const [result, setResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(false);
-  const [done, setDone] = useState(false);
+  const [error, setError] = useState("");
   const abortRef = useRef<AbortController | null>(null);
 
   const analyze = async () => {
     if (loading) return;
-    setResult("");
-    setDone(false);
+    setResult(null);
+    setError("");
     setLoading(true);
     abortRef.current = new AbortController();
 
@@ -102,28 +218,21 @@ export default function AuditPage() {
       const res = await fetch("/api/audit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code }),
+        body: JSON.stringify({ description }),
         signal: abortRef.current.signal,
       });
 
-      if (!res.ok || !res.body) {
-        setResult("Service unavailable. Please try again.");
-        setDone(true);
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        setError(data.error ?? "Service unavailable. Please try again.");
         return;
       }
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      while (true) {
-        const { done: streamDone, value } = await reader.read();
-        if (streamDone) break;
-        setResult((prev) => prev + decoder.decode(value, { stream: true }));
-      }
-      setDone(true);
+      setResult(data as AnalysisResult);
     } catch (err: unknown) {
       if (err instanceof Error && err.name !== "AbortError") {
-        setResult("An error occurred. Please try again.");
-        setDone(true);
+        setError("Une erreur est survenue. Réessaie.");
       }
     } finally {
       setLoading(false);
@@ -154,7 +263,6 @@ export default function AuditPage() {
               <p className="font-heading font-bold text-[11px] tracking-[0.14em] uppercase text-[#1a1a1a]">Thierry</p>
             </div>
           </Link>
-
           <Link
             href="/"
             className="flex items-center gap-1.5 text-sm font-medium text-[#555555] hover:text-[#1a1a1a] transition-colors"
@@ -167,7 +275,6 @@ export default function AuditPage() {
         </div>
       </div>
 
-      {/* Page content */}
       <div className="w-full max-w-5xl mx-auto px-6 pt-32 pb-24">
 
         {/* Header */}
@@ -178,65 +285,62 @@ export default function AuditPage() {
           className="mb-12"
         >
           <p className="text-[10px] font-black tracking-[0.3em] uppercase text-[#888888] mb-3">
-            Free Tool — by Dev Thierry
+            Outil gratuit — par Dev Thierry
           </p>
           <h1
             className="font-heading font-black text-[#1a1a1a] leading-[1.02] tracking-tight mb-4"
             style={{ fontSize: "clamp(2.4rem, 6vw, 4.5rem)" }}
           >
-            Smart Contract
+            Analyse ton
             <br />
-            <span className="text-[#888888]">Security Auditor</span>
+            <span className="text-[#888888]">Projet</span>
           </h1>
           <p className="text-sm text-[#888888] max-w-lg">
-            Paste your Solidity contract and get an instant AI security audit.
-            Detects reentrancy, access control issues, overflow, and more.
-            Powered by <strong className="text-[#1a1a1a]">Llama 3.3 70B</strong>.
+            Décris ton idée en quelques lignes. L&apos;IA analyse ton projet, identifie les besoins techniques
+            et te dit exactement comment Dev Thierry peut t&apos;aider.
+            Propulsé par <strong className="text-[#1a1a1a]">Claude API · Anthropic</strong>.
           </p>
         </motion.div>
 
-        {/* Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-          {/* Left — code input */}
+          {/* Left — input */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col gap-4"
+            className="flex flex-col gap-4 lg:sticky lg:top-28"
           >
             <div className="rounded-2xl overflow-hidden" style={{ border: "1px solid rgba(26,26,26,0.12)" }}>
-              {/* Terminal bar */}
               <div className="flex items-center gap-2 px-4 py-3 bg-[#1a1a1a]">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f57]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#febc2e]" />
                 <span className="w-2.5 h-2.5 rounded-full bg-[#28c840]" />
-                <span className="ml-2 text-[11px] font-mono text-white/30 tracking-wider">contract.sol</span>
+                <span className="ml-2 text-[11px] font-mono text-white/30 tracking-wider">mon-projet.txt</span>
               </div>
-              {/* Code textarea */}
               <textarea
-                value={code}
-                onChange={(e) => setCode(e.target.value)}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 spellCheck={false}
-                placeholder="// Paste your Solidity contract here..."
-                className="w-full font-mono text-xs leading-relaxed resize-none outline-none p-5"
+                placeholder={`Décris ton projet ici...\n\nEx: Je veux créer une plateforme où les artistes haïtiens peuvent vendre leurs œuvres en NFT. Les acheteurs paient en crypto ou carte bancaire. Je veux aussi un système de royalties automatique et un dashboard pour les artistes.`}
+                className="w-full text-sm leading-relaxed resize-none outline-none p-5"
                 style={{
-                  background: "#111111",
-                  color: "#e2e8f0",
-                  minHeight: "400px",
-                  caretColor: "#28c840",
+                  background: "#ffffff",
+                  color: "#1a1a1a",
+                  minHeight: "300px",
+                  caretColor: "#1a1a1a",
                 }}
               />
             </div>
 
             <button
               onClick={analyze}
-              disabled={loading || !code.trim()}
+              disabled={loading || !description.trim()}
               className="w-full py-4 rounded-2xl font-semibold text-sm transition-all duration-200 flex items-center justify-center gap-2"
               style={{
-                background: loading || !code.trim() ? "rgba(26,26,26,0.15)" : "#1a1a1a",
-                color: loading || !code.trim() ? "rgba(26,26,26,0.35)" : "#ffffff",
-                cursor: loading || !code.trim() ? "not-allowed" : "pointer",
+                background: loading || !description.trim() ? "rgba(26,26,26,0.15)" : "#1a1a1a",
+                color: loading || !description.trim() ? "rgba(26,26,26,0.35)" : "#ffffff",
+                cursor: loading || !description.trim() ? "not-allowed" : "pointer",
               }}
             >
               {loading ? (
@@ -245,20 +349,20 @@ export default function AuditPage() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Scanning vulnerabilities...
+                  Analyse en cours...
                 </>
               ) : (
                 <>
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
-                  Analyze Contract
+                  Analyser mon projet
                 </>
               )}
             </button>
 
             <p className="text-[11px] text-[#aaaaaa] text-center">
-              Free · No login required · Max 8,000 chars
+              Gratuit · Sans inscription · Plus tu décris, mieux c&apos;est
             </p>
           </motion.div>
 
@@ -268,87 +372,70 @@ export default function AuditPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
           >
-            <div
-              className="rounded-2xl p-6 min-h-[500px] flex flex-col"
-              style={{
-                background: result ? "#ffffff" : "rgba(26,26,26,0.03)",
-                border: "1px solid rgba(26,26,26,0.1)",
-              }}
-            >
-              {/* Empty state */}
-              {!result && !loading && (
-                <div className="flex flex-col items-center justify-center flex-1 gap-3 py-16">
+            <AnimatePresence mode="wait">
+              {!result && !loading && !error && (
+                <motion.div
+                  key="empty"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="rounded-2xl flex flex-col items-center justify-center gap-3 py-24"
+                  style={{ background: "rgba(26,26,26,0.03)", border: "1px solid rgba(26,26,26,0.1)" }}
+                >
                   <div className="w-12 h-12 rounded-2xl flex items-center justify-center" style={{ background: "rgba(26,26,26,0.06)" }}>
                     <svg className="w-5 h-5 text-[#aaaaaa]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
                     </svg>
                   </div>
-                  <p className="text-sm text-[#aaaaaa]">Audit results will appear here</p>
-                </div>
+                  <p className="text-sm text-[#aaaaaa]">L&apos;analyse apparaîtra ici</p>
+                </motion.div>
               )}
 
-              {/* Loading */}
-              {loading && !result && (
-                <div className="flex flex-col items-center justify-center flex-1 gap-3 py-16">
+              {loading && (
+                <motion.div
+                  key="loading"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="rounded-2xl flex flex-col items-center justify-center gap-4 py-24"
+                  style={{ background: "rgba(26,26,26,0.03)", border: "1px solid rgba(26,26,26,0.1)" }}
+                >
                   <svg className="w-6 h-6 animate-spin text-[#aaaaaa]" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  <p className="text-sm text-[#aaaaaa]">Scanning for vulnerabilities...</p>
-                </div>
+                  <p className="text-sm text-[#aaaaaa]">Analyse de ton projet...</p>
+                </motion.div>
               )}
 
-              {/* Result */}
-              {result && (
-                <div className="flex-1">
-                  {result.split("\n").map((line, i) => (
-                    <ResultLine key={i} line={line} i={i} />
-                  ))}
-                  {loading && (
-                    <span className="inline-block w-[3px] h-4 bg-[#1a1a1a] animate-pulse ml-0.5 align-middle" />
-                  )}
-                  {done && (
-                    <div
-                      className="mt-6 pt-4 flex items-center justify-between"
-                      style={{ borderTop: "1px solid rgba(26,26,26,0.08)" }}
-                    >
-                      <p className="text-[11px] text-[#aaaaaa]">
-                        By <strong className="text-[#1a1a1a]">Dev Thierry</strong> · Llama 3.3 via Groq
-                      </p>
-                      <button
-                        onClick={() => { setResult(""); setDone(false); }}
-                        className="text-[11px] text-[#888888] hover:text-[#1a1a1a] transition-colors"
-                      >
-                        New audit →
-                      </button>
-                    </div>
-                  )}
-                </div>
+              {error && (
+                <motion.div
+                  key="error"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="rounded-2xl p-6 flex items-center justify-center"
+                  style={{ background: "#fff5f5", border: "1px solid #fecaca" }}
+                >
+                  <p className="text-sm text-[#dc2626]">{error}</p>
+                </motion.div>
               )}
-            </div>
+
+              {result && !loading && (
+                <motion.div key="result" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                  <AnalysisBoard result={result} />
+                  <div className="mt-4 flex justify-end px-1">
+                    <button
+                      onClick={() => { setResult(null); setDescription(""); }}
+                      className="text-[11px] text-[#888888] hover:text-[#1a1a1a] transition-colors"
+                    >
+                      Nouveau projet →
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
-
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.5 }}
-          className="mt-16 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-          style={{ borderTop: "1px solid rgba(26,26,26,0.1)" }}
-        >
-          <div>
-            <p className="font-heading font-bold text-[#1a1a1a] text-lg">Need a full manual audit?</p>
-            <p className="text-sm text-[#888888] mt-0.5">I do thorough security reviews for production contracts.</p>
-          </div>
-          <Link
-            href="/#contact"
-            className="px-6 py-3 rounded-xl bg-[#1a1a1a] text-white text-sm font-semibold hover:bg-[#333333] transition-colors whitespace-nowrap shrink-0"
-          >
-            Contact Me
-          </Link>
-        </motion.div>
-
       </div>
     </div>
   );
